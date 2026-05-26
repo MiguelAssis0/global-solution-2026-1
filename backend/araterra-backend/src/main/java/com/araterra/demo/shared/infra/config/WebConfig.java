@@ -1,4 +1,4 @@
-package com.fiap.hackgov.shared.infra.config;
+package com.araterra.demo.shared.infra.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

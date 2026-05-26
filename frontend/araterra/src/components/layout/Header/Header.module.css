@@ -1,0 +1,31 @@
+.header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  margin-top: 4px;
+  font-size: 0.96rem;
+  color: var(--color-text-2);
+}
+
+.tag {
+  background: rgba(61, 255, 122, 0.12);
+  color: var(--color-accent);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.82rem;
+  font-weight: 700;
+}

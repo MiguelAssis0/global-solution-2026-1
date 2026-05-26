@@ -1,0 +1,131 @@
+:root {
+  /* Base (mais neutra e confortável) */
+  --color-bg: #0b0f14;
+  --color-surface: #121823;
+  --color-surface-2: #182230;
+  --color-border: #243041;
+
+  /* Texto (mais leitura e hierarquia) */
+  --color-text: #e6f1ff;
+  --color-text-2: #9bb0c3;
+  --color-text-3: #5c738a;
+
+  /* Acento principal (menos neon, mais tech premium) */
+  --color-accent: #5aa9ff;
+  --color-accent-2: #f5c542;
+  --color-accent-3: #ff6b4a;
+
+  /* Secundários (mais “soft tech”) */
+  --color-purple: #9b8cff;
+
+  /* Scores (mais consistentes e menos agressivos) */
+  --color-score-high: #4fb3ff;
+  --color-score-mid: #f2c94c;
+  --color-score-low: #ff6b4a;
+
+  /* Layers (harmonia entre si, menos saturação extrema) */
+  --color-layer-roads: #5aa9ff;
+  --color-layer-power: #f2c94c;
+  --color-layer-satellite: #9b8cff;
+  --color-layer-ndvi: #6fd3ff;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --font-sans: "Syne", sans-serif;
+  --font-mono: "Space Mono", monospace;
+  --font-size-xs: 10px;
+  --font-size-sm: 11px;
+  --font-size-md: 12px;
+  --font-size-base: 13px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 24px;
+  --font-size-score: 52px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 800;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 20px rgba(77, 166, 255, 0.15);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.4s ease;
+  --z-map: 100;
+  --z-overlay: 800;
+  --z-toolbar: 900;
+  --z-hint: 910;
+  --z-loading: 920;
+  --z-modal: 1000;
+  --header-height: 52px;
+  --toolbar-height: 44px;
+  --sidebar-width: 340px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  line-height: 1.5;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.leaflet-container {
+     background: #0a0f16;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(17, 19, 26, 0.96);
+  color: var(--color-text);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) saturate(0.6) brightness(0.8);
+}
+
+.satellite-active .leaflet-tile {
+  filter: none !important;
+}

@@ -1,0 +1,27 @@
+.page {
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr;
+  height: 100%;
+  background: var(--color-bg);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.mapPanel {
+  position: relative;
+  background: var(--color-surface);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.sidebarPanel {
+  background: var(--color-surface-2);
+  padding: var(--space-4);
+  overflow-y: auto;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}

@@ -1,0 +1,42 @@
+.toolbar {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-4);
+  z-index: var(--z-toolbar);
+  display: grid;
+  gap: var(--space-3);
+  width: min(100%, 340px);
+}
+
+.controls,
+.layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(13, 19, 12, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+button {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.active,
+.layerActive {
+  background: rgba(61, 255, 122, 0.14);
+  color: var(--color-accent);
+}

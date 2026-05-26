@@ -1,4 +1,4 @@
-package com.fiap.hackgov.shared.infra.config;
+package com.araterra.demo.shared.infra.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
