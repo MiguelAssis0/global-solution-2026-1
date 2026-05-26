@@ -1,6 +1,6 @@
 package com.araterra.demo.auth.internal.entities;
 
-import com.fiap.hackgov.auth.internal.entities.enums.Roles;
+import com.araterra.demo.auth.internal.entities.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +30,6 @@ public class User implements UserDetails {
     private String lastName;
 
     @Column(unique = true)
-    private String cpf;
-
-    @Column(unique = true)
     private String email;
 
     @Column(nullable = false, length = 2000)
@@ -50,8 +47,6 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String phone;
-
-    private Boolean twoFactor = false;
 
     private Boolean acceptTerms = true;
 

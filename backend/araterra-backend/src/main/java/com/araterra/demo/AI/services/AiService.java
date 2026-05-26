@@ -44,8 +44,7 @@ public class AiService {
             return new ResponseAI(response.text());
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException("Erro ao carregar contexto do assistente", e);
+            throw new RuntimeException("Error loading context", e);
         }
     }
 }

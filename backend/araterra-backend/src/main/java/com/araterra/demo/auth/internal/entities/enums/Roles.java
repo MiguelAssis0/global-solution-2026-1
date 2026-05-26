@@ -1,11 +1,8 @@
-package com.fiap.hackgov.auth.internal.entities.enums;
+package com.araterra.demo.auth.internal.entities.enums;
 
 public enum Roles {
-    //Fazer id da role
-    //ex: EMPLOYEE -> 1
-    EMPLOYEE(1),
-    CITIZEN(2),
-    ADMIN(3);
+    USER(1),
+    ADMIN(2);
 
     private final int id;
 
