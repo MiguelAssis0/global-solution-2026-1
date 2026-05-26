@@ -47,5 +47,21 @@ services:
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_TIME: ${JWT_TIME}
 
+  frontend:
+    build:
+      context: ./frontend/araterra
+      dockerfile: Dockerfile
+
+    container_name: geospatial-frontend
+
+    depends_on:
+      - backend
+
+    ports:
+      - "3000:80"
+
+    environment:
+      VITE_API_BASE_URL: "/api"
+
 volumes:
   postgres_data:
