@@ -1,9 +1,9 @@
 package com.araterra.demo.geospatial.controller;
 
 import com.araterra.demo.geospatial.dto.*;
-import com.araterra.demo.geospatial.dto.WeatherResponse;
 import com.araterra.demo.geospatial.service.AnalysisService;
 import com.araterra.demo.geospatial.service.AiInsightService;
+import com.araterra.demo.geospatial.service.WeatherService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +13,12 @@ public class AnalysisController {
 
     private final AnalysisService analysisService;
     private final AiInsightService aiInsightService;
+    private final WeatherService weatherService;
 
-    public AnalysisController(AnalysisService analysisService, AiInsightService aiInsightService) {
+    public AnalysisController(AnalysisService analysisService, AiInsightService aiInsightService, WeatherService weatherService) {
         this.analysisService = analysisService;
         this.aiInsightService = aiInsightService;
+        this.weatherService = weatherService;
     }
 
     @PostMapping("/analysis/query-point")
@@ -31,13 +33,7 @@ public class AnalysisController {
 
     @GetMapping("/geo/weather")
     public WeatherResponse getWeather(@RequestParam double lat, @RequestParam double lng) {
-        double temperature = 18.0 + 10.0 * Math.sin(Math.toRadians(lat));
-        int humidity = (int) Math.max(30, Math.min(95, 65 + 20 * Math.cos(Math.toRadians(lng))));
-        double windSpeed = Math.max(0.5, 6.0 * Math.abs(Math.sin(Math.toRadians(lng * 2))));
-        double precipitation = Math.max(0.0, 5.0 + 10.0 * Math.sin(Math.toRadians(lat * 1.5)));
-        double weeklyRain = Math.max(0.0, precipitation * (0.5 + 0.5 * Math.cos(Math.toRadians(lat))));
-
-        return new WeatherResponse(temperature, humidity, windSpeed, precipitation, weeklyRain);
+        return weatherService.getWeather(lat, lng);
     }
 
     @PostMapping("/region-summary")

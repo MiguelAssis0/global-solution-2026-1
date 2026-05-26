@@ -16,14 +16,20 @@ spring:
 
     properties:
       hibernate:
-        jbdc:
+        jdbc:
             time-zone: UTC
-        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG95Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
         format_sql: true
 
 server:
   port: 8080
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:true}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:true}
 
 logging:
   level:
@@ -33,6 +39,15 @@ logging:
 ai:
   provider: gemini
   api-key: ${GOOGLE_API_KEY}
+
+weather:
+  api:
+    key: ${WEATHER_API_KEY}
+    url: https://api.openweathermap.org/data/2.5/weather
+
+data:
+  seeder:
+    enabled: ${DATA_SEEDER_ENABLED:false}
 
 api:
   security:

@@ -12,6 +12,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,9 @@ import java.util.List;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
+
+    @Value("${data.seeder.enabled:false}")
+    private boolean seederEnabled;
 
     private final RoadRepository roadRepository;
     private final AgriculturalAreaRepository agriculturalAreaRepository;
@@ -35,6 +39,10 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (!seederEnabled) {
+            return;
+        }
+
         if (roadRepository.count() > 0) {
             return;
         }
