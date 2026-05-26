@@ -2,11 +2,14 @@ package com.araterra.demo.auth.internal.services;
 
 import com.araterra.demo.auth.internal.DTOs.LoginRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.LoginResponseDTO;
+import com.araterra.demo.auth.internal.DTOs.RegisterRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
+import com.araterra.demo.auth.internal.entities.enums.Roles;
 import com.araterra.demo.auth.internal.entities.User;
 import com.araterra.demo.auth.internal.repositories.UserRepository;
 import com.araterra.demo.shared.infra.exceptions.InvalidCredentialsException;
+import com.araterra.demo.shared.infra.exceptions.ResourceAlreadyExistsException;
 import com.araterra.demo.shared.infra.services.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +83,32 @@ public class AuthService {
 
         String accessToken = tokenService.generateToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
+
+        return new LoginResponseDTO(accessToken, refreshToken, false);
+    }
+
+    public LoginResponseDTO register(RegisterRequestDTO registerRequest) {
+        String email = registerRequest.email().trim().toLowerCase();
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ResourceAlreadyExistsException("Email already registered");
+        }
+
+        String[] nameParts = registerRequest.name().trim().split("\\s+", 2);
+
+        User user = new User();
+        user.setFirstName(nameParts[0]);
+        user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(registerRequest.password()));
+        user.setStatus(true);
+        user.setAccessibility(false);
+        user.setRole(Roles.USER);
+        user.setAcceptTerms(true);
+
+        User savedUser = userRepository.save(user);
+        String accessToken = tokenService.generateToken(savedUser);
+        String refreshToken = tokenService.generateRefreshToken(savedUser);
 
         return new LoginResponseDTO(accessToken, refreshToken, false);
     }

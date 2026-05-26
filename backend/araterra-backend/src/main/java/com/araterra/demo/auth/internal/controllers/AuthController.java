@@ -3,10 +3,9 @@ package com.araterra.demo.auth.internal.controllers;
 
 import com.araterra.demo.auth.internal.DTOs.LoginRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.LoginResponseDTO;
+import com.araterra.demo.auth.internal.DTOs.RegisterRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
-import com.araterra.demo.auth.internal.DTOs.TwoFactorRequestDTO;
-import com.araterra.demo.auth.internal.DTOs.TwoFactorResponseDTO;
 import com.araterra.demo.auth.internal.services.AuthService;
 import com.araterra.demo.shared.infra.services.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +45,16 @@ public class AuthController {
         String clientIp = getClientIp(httpRequest);
         LoginResponseDTO response = authService.login(loginRequest, clientIp);
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Register", description = "Create a new user account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Registration successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid input or email already registered")
+    })
+    @PostMapping("/register")
+    public ResponseEntity<LoginResponseDTO> register(@RequestBody @Valid RegisterRequestDTO registerRequest) {
+        return ResponseEntity.ok(authService.register(registerRequest));
     }
 
     private String getClientIp(HttpServletRequest request) {
