@@ -73,10 +73,22 @@ export interface RegionSummaryCharacteristics {
   nearestRoadName?: string;
   nearestRoadDistanceKm?: number;
   nearestInfrastructureName?: string;
-  nearestInfrastructureType?: string;
+  nearestInfrastructureType?: "CITY" | "SUBSTATION" | "FARM" | "SILO" | "LOGISTIC_CENTER";
   nearestInfrastructureDistanceKm?: number;
   vegetationScore?: number;
   areaType?: string;
+}
+
+export interface QueryPointResponse {
+  latitude: number;
+  longitude: number;
+  nearestRoadName?: string;
+  distanceToRoadKm?: number;
+  nearestInfrastructureName?: string;
+  nearestInfrastructureType?: "CITY" | "SUBSTATION" | "FARM" | "SILO" | "LOGISTIC_CENTER";
+  distanceToInfrastructureKm?: number;
+  areaType?: string;
+  vegetationIndex?: number;
 }
 
 export interface RegionSummaryResponse {
@@ -89,8 +101,4 @@ export interface RegionSummaryResponse {
     suitabilityLevel: SuitabilityLevel;
   };
   characteristics: RegionSummaryCharacteristics;
-  ai?: {
-    insight?: string;
-    recommendedUse?: string;
-  };
 }

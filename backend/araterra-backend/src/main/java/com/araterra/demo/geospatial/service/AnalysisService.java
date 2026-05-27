@@ -1,67 +1,41 @@
 package com.araterra.demo.geospatial.service;
 
 import com.araterra.demo.geospatial.dto.*;
-import com.araterra.demo.geospatial.entity.AgriculturalArea;
-import com.araterra.demo.geospatial.entity.InfrastructurePoint;
-import com.araterra.demo.geospatial.entity.Road;
 import com.araterra.demo.geospatial.enums.InfrastructureType;
 import com.araterra.demo.geospatial.enums.SuitabilityLevel;
-import com.araterra.demo.geospatial.repository.AgriculturalAreaRepository;
-import com.araterra.demo.geospatial.repository.InfrastructurePointRepository;
-import com.araterra.demo.geospatial.repository.RoadRepository;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AnalysisService {
+    private static final String UNKNOWN_ROAD = "Unknown road";
+    private static final String UNKNOWN_INFRASTRUCTURE = "Unknown infrastructure";
+    private static final String UNKNOWN_AREA = "Unknown area";
 
-    private final RoadRepository roadRepository;
-    private final AgriculturalAreaRepository agriculturalAreaRepository;
-    private final InfrastructurePointRepository infrastructurePointRepository;
-    private final GeometryFactory geometryFactory = new GeometryFactory();
+    private final NominatimService nominatimService;
 
-    public AnalysisService(RoadRepository roadRepository,
-                           AgriculturalAreaRepository agriculturalAreaRepository,
-                           InfrastructurePointRepository infrastructurePointRepository) {
-        this.roadRepository = roadRepository;
-        this.agriculturalAreaRepository = agriculturalAreaRepository;
-        this.infrastructurePointRepository = infrastructurePointRepository;
+    public AnalysisService(NominatimService nominatimService) {
+        this.nominatimService = nominatimService;
     }
 
     public QueryPointResponseDTO queryPoint(double latitude, double longitude) {
-        String nearestRoadName = null;
-        Double distanceToRoadKm = null;
-        String nearestInfrastructureName = null;
-        InfrastructureType nearestInfrastructureType = null;
-        Double distanceToInfrastructureKm = null;
-        String areaType = null;
-        Double vegetationIndex = null;
+        NominatimResponseDTO nominatim = nominatimService.reverseGeocode(latitude, longitude).orElse(null);
 
-        Optional<Road> nearestRoad = roadRepository.findNearestRoad(latitude, longitude);
-        if (nearestRoad.isPresent()) {
-            Road road = nearestRoad.get();
-            nearestRoadName = road.getName();
-            distanceToRoadKm = calculateDistance(latitude, longitude, road.getGeometry());
-        }
-
-        Optional<InfrastructurePoint> nearestInfrastructure = infrastructurePointRepository.findNearestInfrastructure(latitude, longitude);
-        if (nearestInfrastructure.isPresent()) {
-            InfrastructurePoint infrastructure = nearestInfrastructure.get();
-            nearestInfrastructureName = infrastructure.getName();
-            nearestInfrastructureType = infrastructure.getType();
-            distanceToInfrastructureKm = calculateDistance(latitude, longitude, infrastructure.getGeometry());
-        }
-
-        Optional<AgriculturalArea> area = agriculturalAreaRepository.findAreaContainingPoint(latitude, longitude);
-        if (area.isPresent()) {
-            AgriculturalArea agriculturalArea = area.get();
-            areaType = "Agricultural Area";
-            vegetationIndex = agriculturalArea.getVegetationIndex();
-        }
+        String nearestRoadName = firstNonBlank(
+                nominatimRoadName(nominatim),
+                UNKNOWN_ROAD
+        );
+        String nearestInfrastructureName = firstNonBlank(
+                nominatimInfrastructureName(nominatim),
+                UNKNOWN_INFRASTRUCTURE
+        );
+        InfrastructureType nearestInfrastructureType = nominatimInfrastructureType(nominatim);
+        String areaType = firstNonBlank(
+                nominatimAreaType(nominatim),
+                UNKNOWN_AREA
+        );
+        Double distanceToRoadKm = 0.0;
+        Double distanceToInfrastructureKm = 0.0;
+        Double vegetationIndex = 0.4;
 
         return new QueryPointResponseDTO(
                 latitude,
@@ -77,20 +51,10 @@ public class AnalysisService {
     }
 
     public ScoreResponseDTO calculateScore(double latitude, double longitude) {
-        Optional<Road> nearestRoad = roadRepository.findNearestRoad(latitude, longitude);
-        double roadDistanceKm = nearestRoad
-            .map(road -> calculateDistance(latitude, longitude, road.getGeometry()))
-            .orElse(Double.MAX_VALUE);
-
-        Optional<InfrastructurePoint> nearestInfrastructure = infrastructurePointRepository.findNearestInfrastructure(latitude, longitude);
-        double infrastructureDistanceKm = nearestInfrastructure
-            .map(infrastructure -> calculateDistance(latitude, longitude, infrastructure.getGeometry()))
-            .orElse(Double.MAX_VALUE);
-
-        Optional<AgriculturalArea> area = agriculturalAreaRepository.findAreaContainingPoint(latitude, longitude);
-        double vegetationScore = area
-            .map(AgriculturalArea::getVegetationIndex)
-            .orElse(0.4);
+        QueryPointResponseDTO queryPoint = queryPoint(latitude, longitude);
+        double roadDistanceKm = queryPoint.distanceToRoadKm() != null ? queryPoint.distanceToRoadKm() : 0.0;
+        double infrastructureDistanceKm = queryPoint.distanceToInfrastructureKm() != null ? queryPoint.distanceToInfrastructureKm() : 0.0;
+        double vegetationScore = queryPoint.vegetationIndex() != null ? queryPoint.vegetationIndex() : 0.4;
 
         double roadScore = calculateRoadScore(roadDistanceKm);
         double infrastructureScore = calculateInfrastructureScore(infrastructureDistanceKm);
@@ -131,12 +95,6 @@ public class AnalysisService {
         );
     }
 
-    private double calculateDistance(double latitude, double longitude, org.locationtech.jts.geom.Geometry geometry) {
-        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        double distanceMeters = point.distance(geometry);
-        return distanceMeters / 1000.0;
-    }
-
     private double calculateRoadScore(double distanceKm) {
         if (distanceKm <= 5) return 1.0;
         if (distanceKm <= 15) return 0.7;
@@ -155,5 +113,90 @@ public class AnalysisService {
         if (finalScore >= 0.75) return SuitabilityLevel.HIGH;
         if (finalScore >= 0.45) return SuitabilityLevel.MEDIUM;
         return SuitabilityLevel.LOW;
+    }
+
+    private String nominatimRoadName(NominatimResponseDTO response) {
+        if (response == null) {
+            return null;
+        }
+
+        NominatimAddressDTO address = response.address();
+        return firstNonBlank(
+                address != null ? address.road() : null,
+                response.display_name(),
+                response.name()
+        );
+    }
+
+    private String nominatimInfrastructureName(NominatimResponseDTO response) {
+        if (response == null) {
+            return null;
+        }
+
+        NominatimAddressDTO address = response.address();
+        return firstNonBlank(
+                response.name(),
+                address != null ? address.railway() : null,
+                address != null ? address.city() : null
+        );
+    }
+
+    private InfrastructureType nominatimInfrastructureType(NominatimResponseDTO response) {
+        if (response == null || response.nominatimClass() == null) {
+            return InfrastructureType.CITY;
+        }
+
+        return switch (response.nominatimClass()) {
+            case "railway" -> InfrastructureType.LOGISTIC_CENTER;
+            case "power" -> InfrastructureType.SUBSTATION;
+            case "place" -> InfrastructureType.CITY;
+            default -> InfrastructureType.CITY;
+        };
+    }
+
+    private String nominatimAreaType(NominatimResponseDTO response) {
+        if (response == null) {
+            return null;
+        }
+
+        NominatimAddressDTO address = response.address();
+        String location = firstNonBlank(
+                address != null ? address.city() : null,
+                address != null ? address.suburb() : null,
+                address != null ? address.state() : null
+        );
+        String category = buildCategory(response.nominatimClass(), response.type());
+
+        if (location != null && category != null) {
+            return location + " - " + category;
+        }
+
+        return firstNonBlank(location, category);
+    }
+
+    private String buildCategory(String nominatimClass, String type) {
+        if (isBlank(nominatimClass) && isBlank(type)) {
+            return null;
+        }
+        if (isBlank(nominatimClass)) {
+            return type;
+        }
+        if (isBlank(type)) {
+            return nominatimClass;
+        }
+        return nominatimClass + "/" + type;
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (!isBlank(value)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 }

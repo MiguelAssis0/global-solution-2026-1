@@ -1,4 +1,4 @@
-package com.araterra.demo.geospatial.config;
+package com.araterra.demo.geospatial.mapper;
 
 import com.araterra.demo.geospatial.entity.AgriculturalArea;
 import com.araterra.demo.geospatial.entity.InfrastructurePoint;

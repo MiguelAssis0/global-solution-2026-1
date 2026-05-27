@@ -1,11 +1,13 @@
 import { api } from "./api";
-import type { AnalysisResult, InfraResult, RegionSummaryResponse } from "../types/analysis.types";
+import type { AnalysisResult, InfraResult, QueryPointResponse, RegionSummaryResponse } from "../types/analysis.types";
 import { calcAreaKm2, getBoundsFromVertices, getBiome, haversineDistance } from "../utils/geo";
 
 const normalizeId = (result: AnalysisResult) => ({
   ...result,
   id: result.id ?? `analysis-${Date.now()}`,
 });
+
+const normalizeFinalScore = (score: number) => (score <= 1 ? score * 100 : score);
 
 const mapSuitabilityClassifier = (level: RegionSummaryResponse["score"]["suitabilityLevel"]): { classification: "alta" | "media" | "baixa"; classificationLabel: string } => {
   switch (level) {
@@ -26,9 +28,10 @@ const mapScoreBreakdown = (response: RegionSummaryResponse) => {
   const roadsScore = roadDistance <= 5 ? 100 : roadDistance <= 15 ? 70 : roadDistance <= 30 ? 40 : 10;
   const energyScore = infraDistance <= 10 ? 100 : infraDistance <= 30 ? 70 : infraDistance <= 60 ? 40 : 10;
   const ndviScore = Math.round(Math.min(Math.max(vegetationScore, 0), 1) * 100);
+  const finalScore = normalizeFinalScore(response.score.finalScore);
 
   return {
-    finalScore: response.score.finalScore,
+    finalScore,
     classification: mapSuitabilityClassifier(response.score.suitabilityLevel).classification,
     classificationLabel: mapSuitabilityClassifier(response.score.suitabilityLevel).classificationLabel,
     roadsScore,
@@ -64,7 +67,37 @@ const mapInfraResult = (characteristics: RegionSummaryResponse["characteristics"
   if (type === "SUBSTATION") {
     return { ...base, nearestSubstation: point };
   }
-  if (type === "PORT") {
+  if (type === "LOGISTIC_CENTER") {
+    return { ...base, nearestPort: point };
+  }
+
+  return base;
+};
+
+const mapQueryPointInfraResult = (response: QueryPointResponse): InfraResult => {
+  const base = {
+    nearestCity: null,
+    nearestSubstation: null,
+    nearestPort: null,
+  };
+
+  if (!response.nearestInfrastructureName || response.distanceToInfrastructureKm == null) {
+    return base;
+  }
+
+  const point = {
+    name: response.nearestInfrastructureName,
+    type: response.nearestInfrastructureType ?? "unknown",
+    distKm: response.distanceToInfrastructureKm,
+  };
+
+  if (response.nearestInfrastructureType === "CITY") {
+    return { ...base, nearestCity: point };
+  }
+  if (response.nearestInfrastructureType === "SUBSTATION") {
+    return { ...base, nearestSubstation: point };
+  }
+  if (response.nearestInfrastructureType === "LOGISTIC_CENTER") {
     return { ...base, nearestPort: point };
   }
 
@@ -85,7 +118,38 @@ const mapRegionSummaryToAnalysis = (response: RegionSummaryResponse) => {
     roads,
     infra: mapInfraResult(response.characteristics),
     score: mapScoreBreakdown(response),
-    aiInsight: response.ai?.insight,
+  };
+};
+
+const mapQueryPointToAnalysis = (response: QueryPointResponse): AnalysisResult => {
+  const roadDistance = response.distanceToRoadKm ?? 0;
+  const infraDistance = response.distanceToInfrastructureKm ?? 0;
+  const vegetationIndex = response.vegetationIndex ?? 0.4;
+
+  return {
+    type: "point",
+    lat: response.latitude,
+    lng: response.longitude,
+    biome: response.areaType ?? getBiome(response.latitude, response.longitude),
+    roads: {
+      count: response.nearestRoadName ? 1 : 0,
+      names: response.nearestRoadName ? [response.nearestRoadName] : [],
+    },
+    infra: mapQueryPointInfraResult(response),
+    score: {
+      finalScore: (
+        (roadDistance <= 5 ? 100 : roadDistance <= 15 ? 70 : roadDistance <= 30 ? 40 : 10) * 0.4
+        + Math.round(Math.min(Math.max(vegetationIndex, 0), 1) * 100) * 0.3
+        + (infraDistance <= 10 ? 100 : infraDistance <= 30 ? 70 : infraDistance <= 60 ? 40 : 10) * 0.3
+      ),
+      classification:
+        roadDistance <= 5 && infraDistance <= 10 ? "alta" : roadDistance <= 30 && infraDistance <= 60 ? "media" : "baixa",
+      classificationLabel:
+        roadDistance <= 5 && infraDistance <= 10 ? "Alta" : roadDistance <= 30 && infraDistance <= 60 ? "Média" : "Baixa",
+      roadsScore: roadDistance <= 5 ? 100 : roadDistance <= 15 ? 70 : roadDistance <= 30 ? 40 : 10,
+      energyScore: infraDistance <= 10 ? 100 : infraDistance <= 30 ? 70 : infraDistance <= 60 ? 40 : 10,
+      ndviScore: Math.round(Math.min(Math.max(vegetationIndex, 0), 1) * 100),
+    },
   };
 };
 
@@ -98,13 +162,12 @@ const calculateCentroid = (vertices: [number, number][]): [number, number] => {
 };
 
 export const analyzePoint = async (lat: number, lng: number): Promise<AnalysisResult> => {
-  const response = await api.post<RegionSummaryResponse>("/region-summary", {
+  const response = await api.post<QueryPointResponse>("/analysis/query-point", {
     latitude: lat,
     longitude: lng,
-    generateAiInsight: false,
   });
 
-  return normalizeId(mapRegionSummaryToAnalysis(response.data));
+  return normalizeId(mapQueryPointToAnalysis(response.data));
 };
 
 export const analyzePolygon = async (vertices: [number, number][]): Promise<AnalysisResult> => {
