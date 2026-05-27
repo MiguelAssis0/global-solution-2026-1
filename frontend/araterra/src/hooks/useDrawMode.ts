@@ -7,19 +7,27 @@ export function useDrawMode() {
   const setDrawMode = useMapStore((state) => state.setDrawMode);
   const addVertex = useMapStore((state) => state.addVertex);
   const clearVertices = useMapStore((state) => state.clearVertices);
+  const clearCompletedPolygons = useMapStore((state) => state.clearCompletedPolygons);
+  const setSelectedPoint = useMapStore((state) => state.setSelectedPoint);
 
   const startMode = useCallback(
     (mode: DrawMode) => {
       clearVertices();
+      if (mode === "polygon") {
+        clearCompletedPolygons();
+        setSelectedPoint(null);
+      }
       setDrawMode(mode);
     },
-    [clearVertices, setDrawMode],
+    [clearVertices, clearCompletedPolygons, setSelectedPoint, setDrawMode],
   );
 
   const cancelDraw = useCallback(() => {
     clearVertices();
+    clearCompletedPolygons();
+    setSelectedPoint(null);
     setDrawMode("idle");
-  }, [clearVertices, setDrawMode]);
+  }, [clearVertices, clearCompletedPolygons, setSelectedPoint, setDrawMode]);
 
   return {
     drawMode,

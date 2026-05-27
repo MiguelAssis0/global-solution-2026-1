@@ -24,9 +24,11 @@ export function Toolbar({ activeLayers, drawMode }: ToolbarProps) {
   return (
     <section className={styles.toolbar}>
       <div className={styles.controls}>
-        <button type="button" onClick={() => startMode("point")} className={drawMode === "point" ? styles.active : ""}>
-          <MapPin size={16} /> Ponto
-        </button>
+        {drawMode !== "polygon" && (
+          <button type="button" onClick={() => startMode("point")} className={drawMode === "point" ? styles.active : ""}>
+            <MapPin size={16} /> Ponto
+          </button>
+        )}
         <button type="button" onClick={() => startMode("polygon")} className={drawMode === "polygon" ? styles.active : ""}>
           <Square size={16} /> Polígono
         </button>
