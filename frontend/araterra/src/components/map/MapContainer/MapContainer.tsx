@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import {
   MapContainer as LeafletMap,
   TileLayer,
@@ -50,8 +50,6 @@ function MapEventHandler({
   const clearCompletedPolygons = useMapStore(
     (state) => state.clearCompletedPolygons,
   );
-
-  const ignoreNextClick = useRef(false);
 
   const map = useMapEvents({
     click(e) {
