@@ -1,6 +1,6 @@
 package com.araterra.demo.geospatial.service;
 
-import com.araterra.demo.geospatial.config.GeoJsonMapper;
+import com.araterra.demo.geospatial.mapper.GeoJsonMapper;
 import com.araterra.demo.geospatial.entity.AgriculturalArea;
 import com.araterra.demo.geospatial.entity.InfrastructurePoint;
 import com.araterra.demo.geospatial.entity.Road;
