@@ -32,105 +32,103 @@ public class AnalysisService {
         this.infrastructurePointRepository = infrastructurePointRepository;
     }
 
-    public QueryPointResponse queryPoint(double latitude, double longitude) {
-        QueryPointResponse response = new QueryPointResponse();
-        response.setLatitude(latitude);
-        response.setLongitude(longitude);
+    public QueryPointResponseDTO queryPoint(double latitude, double longitude) {
+        String nearestRoadName = null;
+        Double distanceToRoadKm = null;
+        String nearestInfrastructureName = null;
+        InfrastructureType nearestInfrastructureType = null;
+        Double distanceToInfrastructureKm = null;
+        String areaType = null;
+        Double vegetationIndex = null;
 
         Optional<Road> nearestRoad = roadRepository.findNearestRoad(latitude, longitude);
         if (nearestRoad.isPresent()) {
             Road road = nearestRoad.get();
-            response.setNearestRoadName(road.getName());
-            response.setDistanceToRoadKm(calculateDistance(latitude, longitude, road.getGeometry()));
+            nearestRoadName = road.getName();
+            distanceToRoadKm = calculateDistance(latitude, longitude, road.getGeometry());
         }
 
         Optional<InfrastructurePoint> nearestInfrastructure = infrastructurePointRepository.findNearestInfrastructure(latitude, longitude);
         if (nearestInfrastructure.isPresent()) {
             InfrastructurePoint infrastructure = nearestInfrastructure.get();
-            response.setNearestInfrastructureName(infrastructure.getName());
-            response.setNearestInfrastructureType(infrastructure.getType());
-            response.setDistanceToInfrastructureKm(calculateDistance(latitude, longitude, infrastructure.getGeometry()));
+            nearestInfrastructureName = infrastructure.getName();
+            nearestInfrastructureType = infrastructure.getType();
+            distanceToInfrastructureKm = calculateDistance(latitude, longitude, infrastructure.getGeometry());
         }
 
         Optional<AgriculturalArea> area = agriculturalAreaRepository.findAreaContainingPoint(latitude, longitude);
         if (area.isPresent()) {
             AgriculturalArea agriculturalArea = area.get();
-            response.setAreaType("Agricultural Area");
-            response.setVegetationIndex(agriculturalArea.getVegetationIndex());
+            areaType = "Agricultural Area";
+            vegetationIndex = agriculturalArea.getVegetationIndex();
         }
 
-        return response;
+        return new QueryPointResponseDTO(
+                latitude,
+                longitude,
+                nearestRoadName,
+                distanceToRoadKm,
+                nearestInfrastructureName,
+                nearestInfrastructureType,
+                distanceToInfrastructureKm,
+                areaType,
+                vegetationIndex
+        );
     }
 
-    public ScoreResponse calculateScore(double latitude, double longitude) {
-        ScoreResponse response = new ScoreResponse();
-
+    public ScoreResponseDTO calculateScore(double latitude, double longitude) {
         Optional<Road> nearestRoad = roadRepository.findNearestRoad(latitude, longitude);
         double roadDistanceKm = nearestRoad
             .map(road -> calculateDistance(latitude, longitude, road.getGeometry()))
             .orElse(Double.MAX_VALUE);
-        response.setDistanceToRoadKm(roadDistanceKm);
 
         Optional<InfrastructurePoint> nearestInfrastructure = infrastructurePointRepository.findNearestInfrastructure(latitude, longitude);
         double infrastructureDistanceKm = nearestInfrastructure
             .map(infrastructure -> calculateDistance(latitude, longitude, infrastructure.getGeometry()))
             .orElse(Double.MAX_VALUE);
-        response.setDistanceToInfrastructureKm(infrastructureDistanceKm);
 
         Optional<AgriculturalArea> area = agriculturalAreaRepository.findAreaContainingPoint(latitude, longitude);
         double vegetationScore = area
             .map(AgriculturalArea::getVegetationIndex)
             .orElse(0.4);
-        response.setVegetationScore(vegetationScore);
 
         double roadScore = calculateRoadScore(roadDistanceKm);
-        response.setLogisticConnectivityScore(roadScore);
-
         double infrastructureScore = calculateInfrastructureScore(infrastructureDistanceKm);
-        response.setEnergyInfrastructureScore(infrastructureScore);
-
         double finalScore = (roadScore * 0.4) + (vegetationScore * 0.3) + (infrastructureScore * 0.3);
-        response.setFinalScore(finalScore);
-
         SuitabilityLevel suitabilityLevel = classifySuitability(finalScore);
-        response.setSuitabilityLevel(suitabilityLevel);
 
-        return response;
+        return new ScoreResponseDTO(
+                roadDistanceKm,
+                infrastructureDistanceKm,
+                vegetationScore,
+                roadScore,
+                infrastructureScore,
+                finalScore,
+                suitabilityLevel
+        );
     }
 
-    public RegionSummaryResponse getRegionSummary(double latitude, double longitude, boolean generateAiInsight) {
-        RegionSummaryResponse response = new RegionSummaryResponse();
+    public RegionSummaryResponseDTO getRegionSummary(double latitude, double longitude, boolean generateAiInsight) {
+        ScoreResponseDTO scoreResponseDTO = calculateScore(latitude, longitude);
 
-        RegionSummaryResponse.Coordinates coordinates = new RegionSummaryResponse.Coordinates();
-        coordinates.setLatitude(latitude);
-        coordinates.setLongitude(longitude);
-        response.setCoordinates(coordinates);
+        QueryPointResponseDTO queryResponse = queryPoint(latitude, longitude);
 
-        ScoreResponse scoreResponse = calculateScore(latitude, longitude);
-        RegionSummaryResponse.Score score = new RegionSummaryResponse.Score();
-        score.setFinalScore(scoreResponse.getFinalScore());
-        score.setSuitabilityLevel(scoreResponse.getSuitabilityLevel());
-        response.setScore(score);
-
-        QueryPointResponse queryResponse = queryPoint(latitude, longitude);
-        RegionSummaryResponse.Characteristics characteristics = new RegionSummaryResponse.Characteristics();
-        characteristics.setNearestRoadName(queryResponse.getNearestRoadName());
-        characteristics.setNearestRoadDistanceKm(queryResponse.getDistanceToRoadKm());
-        characteristics.setNearestInfrastructureName(queryResponse.getNearestInfrastructureName());
-        characteristics.setNearestInfrastructureType(queryResponse.getNearestInfrastructureType());
-        characteristics.setNearestInfrastructureDistanceKm(queryResponse.getDistanceToInfrastructureKm());
-        characteristics.setVegetationScore(queryResponse.getVegetationIndex());
-        characteristics.setAreaType(queryResponse.getAreaType());
-        response.setCharacteristics(characteristics);
-
-        if (generateAiInsight) {
-            RegionSummaryResponse.AiInsight aiInsight = new RegionSummaryResponse.AiInsight();
-            aiInsight.setInsight("A região apresenta alta aptidão por estar próxima de vias e infraestrutura relevante.");
-            aiInsight.setRecommendedUse("AGRICULTURE_AND_LOGISTICS");
-            response.setAi(aiInsight);
-        }
-
-        return response;
+        return new RegionSummaryResponseDTO(
+                new RegionSummaryCoordinatesDTO(latitude, longitude),
+                new RegionSummaryScoreDTO(
+                        scoreResponseDTO.finalScore(),
+                        scoreResponseDTO.suitabilityLevel()
+                ),
+                new RegionSummaryCharacteristicsDTO(
+                        queryResponse.nearestRoadName(),
+                        queryResponse.distanceToRoadKm(),
+                        queryResponse.nearestInfrastructureName(),
+                        queryResponse.nearestInfrastructureType(),
+                        queryResponse.distanceToInfrastructureKm(),
+                        queryResponse.vegetationIndex(),
+                        queryResponse.areaType()
+                )
+        );
     }
 
     private double calculateDistance(double latitude, double longitude, org.locationtech.jts.geom.Geometry geometry) {

@@ -1,6 +1,6 @@
 package com.araterra.demo.geospatial.service;
 
-import com.araterra.demo.geospatial.dto.WeatherResponse;
+import com.araterra.demo.geospatial.dto.WeatherResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,7 +19,7 @@ public class WeatherService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public WeatherResponse getWeather(double lat, double lng) {
+    public WeatherResponseDTO getWeather(double lat, double lng) {
         if (apiKey == null || apiKey.isEmpty()) {
             throw new IllegalStateException("Weather API key not configured. Set WEATHER_API_KEY environment variable.");
         }
@@ -46,7 +46,7 @@ public class WeatherService {
             // Weekly rain estimation (OpenWeatherMap doesn't provide this in current weather)
             double weeklyRain = precipitation > 0 ? precipitation * 7 : 0.0;
 
-            return new WeatherResponse(temperature, humidity, windSpeed, precipitation, weeklyRain);
+            return new WeatherResponseDTO(temperature, humidity, windSpeed, precipitation, weeklyRain);
         } catch (HttpClientErrorException e) {
             throw new RuntimeException("Weather API error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString(), e);
         } catch (Exception e) {
