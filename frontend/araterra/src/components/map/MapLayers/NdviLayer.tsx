@@ -1,16 +1,18 @@
 import { TileLayer } from "react-leaflet";
 
 export function NdviLayer() {
-  // OpenLandMap NDVI tiles - free, dynamic, and properly zoomable
-  // Provides annual maximum NDVI data from Copernicus satellite imagery
-  const url = "https://r.openlandmap.org/annual_max_ndvi/{z}/{x}/{y}.png";
+  const url =
+    `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/` +
+    `VIIRS_SNPP_NDVI_8Day/default/default/` +
+    `GoogleMapsCompatible_Level8/{z}/{y}/{x}.png`;
 
   return (
     <TileLayer
       url={url}
-      attribution="OpenLandMap / Copernicus"
-      opacity={0.7}
-      maxZoom={14}
+      attribution="NASA GIBS / VIIRS SNPP"
+      opacity={0.8}
+      maxZoom={8}
+      tileSize={256}
     />
   );
 }
