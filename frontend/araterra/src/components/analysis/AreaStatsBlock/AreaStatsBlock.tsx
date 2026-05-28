@@ -7,19 +7,27 @@ interface AreaStatsBlockProps {
 
 export function AreaStatsBlock({ analysis }: AreaStatsBlockProps) {
   return (
-    <section style={{ marginBottom: 24, padding: 20, borderRadius: 20, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-      <div style={{ marginBottom: 16, fontWeight: 700 }}>Resumo da área</div>
+    <section
+      style={{
+        marginBottom: 18,
+        padding: 20,
+        borderRadius: 8,
+        background: "rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.14)",
+      }}
+    >
+      <div style={{ marginBottom: 16, fontWeight: 800 }}>Resumo da área</div>
       {analysis.type === "point" ? (
-        <div style={{ display: "grid", gap: 10 }}>
-          <p style={{ margin: 0 }}><strong>Coordenadas:</strong> {formatCoords(analysis.lat, analysis.lng)}</p>
-          <p style={{ margin: 0 }}><strong>Bioma:</strong> {analysis.biome}</p>
+        <div style={{ display: "grid", gap: 10, color: "var(--color-text-2)", fontSize: "0.94rem" }}>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Coordenadas:</strong> {formatCoords(analysis.lat, analysis.lng)}</p>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Bioma:</strong> {analysis.biome}</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gap: 10 }}>
-          <p style={{ margin: 0 }}><strong>Área:</strong> {formatArea(analysis.areaKm2)}</p>
-          <p style={{ margin: 0 }}><strong>Vértices:</strong> {analysis.numVertices}</p>
-          <p style={{ margin: 0 }}><strong>Geom.</strong> {formatCoords(analysis.centroidLat, analysis.centroidLng)}</p>
-          <p style={{ margin: 0 }}><strong>Biomas:</strong> {analysis.biomes.join(", ")}</p>
+        <div style={{ display: "grid", gap: 10, color: "var(--color-text-2)", fontSize: "0.94rem" }}>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Área:</strong> {formatArea(analysis.areaKm2)}</p>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Vértices:</strong> {analysis.numVertices}</p>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Geom.:</strong> {formatCoords(analysis.centroidLat, analysis.centroidLng)}</p>
+          <p style={{ margin: 0 }}><strong style={{ color: "var(--color-text)" }}>Biomas:</strong> {analysis.biomes.join(", ")}</p>
         </div>
       )}
     </section>

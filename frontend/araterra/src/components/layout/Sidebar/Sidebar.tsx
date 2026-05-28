@@ -5,6 +5,7 @@ import { EmptyState } from "../../analysis/EmptyState/EmptyState";
 import { InfraBlock } from "../../analysis/InfraBlock/InfraBlock";
 import { ScoreBlock } from "../../analysis/ScoreBlock/ScoreBlock";
 import { WeatherBlock } from "../../analysis/WeatherBlock/WeatherBlock";
+import styles from "./Sidebar.module.css";
 
 interface SidebarProps {
   analysis: AnalysisResult | null;
@@ -32,9 +33,13 @@ export function Sidebar({
   onGenerateInsight,
 }: SidebarProps) {
   return (
-    <div>
+    <div className={styles.sidebar}>
+      <div className={styles.heading}>
+        <p>Painel de análise</p>
+        <span>Selecione uma área para consolidar score, clima e contexto.</span>
+      </div>
       {error ? (
-        <div style={{ color: "var(--color-score-low)", marginBottom: "1rem" }}>{error}</div>
+        <div className={styles.error}>{error}</div>
       ) : null}
       {analysis ? (
         <>

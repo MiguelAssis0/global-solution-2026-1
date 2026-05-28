@@ -1,7 +1,16 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LockKeyhole, Mail, Map, User } from "lucide-react";
+import {
+  CloudSun,
+  Layers,
+  Leaf,
+  LockKeyhole,
+  Mail,
+  MapPinned,
+  Route,
+  User,
+} from "lucide-react";
 import * as authService from "../../services/authService";
 import styles from "./AuthPage.module.css";
 
@@ -22,7 +31,10 @@ export function AuthPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | null;
-  const initialMode = location.pathname.includes("register") || state?.mode === "register" ? "register" : "login";
+  const initialMode =
+    location.pathname.includes("register") || state?.mode === "register"
+      ? "register"
+      : "login";
 
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [form, setForm] = useState(initialForm);
@@ -30,14 +42,14 @@ export function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const isRegister = mode === "register";
-  const title = isRegister ? "Create your account" : "Welcome back";
-  const submitLabel = isRegister ? "Create Account" : "Sign In";
+  const title = isRegister ? "Crie sua conta" : "Acesse sua área";
+  const submitLabel = isRegister ? "Criar conta" : "Entrar";
 
   const helperText = useMemo(
     () =>
       isRegister
-        ? "Start mapping land, infrastructure, and risk signals with Araterra."
-        : "Sign in to continue to your geospatial dashboard.",
+        ? "Comece a avaliar áreas rurais com mapa, clima, vegetação e infraestrutura em um só ambiente."
+        : "Entre para continuar suas análises territoriais e seus relatórios assistidos por IA.",
     [isRegister],
   );
 
@@ -53,15 +65,15 @@ export function AuthPage() {
 
   const validateForm = () => {
     if (!form.email.trim() || !form.password.trim()) {
-      return "Please fill in all required fields";
+      return "Preencha todos os campos obrigatórios.";
     }
 
     if (isRegister && !form.name.trim()) {
-      return "Please fill in all required fields";
+      return "Informe seu nome para criar a conta.";
     }
 
     if (isRegister && form.password !== form.confirmPassword) {
-      return "Passwords do not match";
+      return "As senhas não conferem.";
     }
 
     return "";
@@ -101,7 +113,11 @@ export function AuthPage() {
       setMode("login");
       setForm((current) => ({ ...current, password: "", confirmPassword: "" }));
     } catch {
-      setError(isRegister ? "Unable to create account" : "Invalid email or password");
+      setError(
+        isRegister
+          ? "Não foi possível criar sua conta."
+          : "E-mail ou senha inválidos.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -109,19 +125,42 @@ export function AuthPage() {
 
   return (
     <main className={styles.page}>
-      <section className={styles.brandPanel} aria-label="Araterra overview">
+      <section className={styles.brandPanel} aria-label="Resumo da Araterra">
+        <div className={styles.brandShade} />
         <div className={styles.brandContent}>
           <Link to="/" className={styles.brandName}>
-            Araterra
+            <Leaf aria-hidden="true" />
+            <span>Araterra</span>
           </Link>
-          <h1>Geospatial intelligence for land and infrastructure analysis.</h1>
-          <p>Inspect terrain, climate, access, and infrastructure signals in one operational map workspace.</p>
+
+          <p className={styles.kicker}>Inteligência territorial agrícola</p>
+          <h1>Decisões de campo com leitura clara do território.</h1>
+          <p>
+            Avalie áreas rurais com camadas geoespaciais, dados climáticos,
+            infraestrutura próxima e sínteses técnicas em linguagem objetiva.
+          </p>
+
+          <div className={styles.featureList} aria-label="Recursos da plataforma">
+            <span>
+              <Layers aria-hidden="true" />
+              Mapas multicamadas
+            </span>
+            <span>
+              <CloudSun aria-hidden="true" />
+              Clima integrado
+            </span>
+            <span>
+              <Route aria-hidden="true" />
+              Acesso e logística
+            </span>
+          </div>
+
           <div className={styles.mapPreview} aria-hidden="true">
             <div className={styles.routeLine} />
             <div className={styles.zoneOne} />
             <div className={styles.zoneTwo} />
             <div className={styles.pin}>
-              <Map size={18} />
+              <MapPinned size={18} />
             </div>
           </div>
         </div>
@@ -131,79 +170,91 @@ export function AuthPage() {
         <div className={styles.card}>
           <div className={styles.mobileBrand}>
             <Link to="/" className={styles.mobileLogo}>
-              Araterra
+              <Leaf aria-hidden="true" />
+              <span>Araterra</span>
             </Link>
           </div>
 
-          <div className={styles.toggle} aria-label="Authentication mode">
-            <button type="button" className={mode === "login" ? styles.activeToggle : ""} onClick={() => switchMode("login")}>
-              Login
+          <div className={styles.toggle} aria-label="Modo de autenticação">
+            <button
+              type="button"
+              className={mode === "login" ? styles.activeToggle : ""}
+              onClick={() => switchMode("login")}
+            >
+              Entrar
             </button>
-            <button type="button" className={mode === "register" ? styles.activeToggle : ""} onClick={() => switchMode("register")}>
-              Register
+            <button
+              type="button"
+              className={mode === "register" ? styles.activeToggle : ""}
+              onClick={() => switchMode("register")}
+            >
+              Criar conta
             </button>
           </div>
 
           <div className={styles.heading}>
+            <p>{isRegister ? "Novo acesso" : "Área do cliente"}</p>
             <h2>{title}</h2>
-            <p>{helperText}</p>
+            <span>{helperText}</span>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit}>
             {isRegister && (
               <label className={styles.field}>
-                <span>Name</span>
+                <span>Nome</span>
                 <div className={styles.inputWrap}>
-                  <User size={18} />
+                  <User aria-hidden="true" size={18} />
                   <input
                     autoComplete="name"
                     value={form.name}
                     onChange={(event) => updateField("name", event.target.value)}
-                    placeholder="Alex Morgan"
+                    placeholder="Seu nome"
                   />
                 </div>
               </label>
             )}
 
             <label className={styles.field}>
-              <span>Email</span>
+              <span>E-mail</span>
               <div className={styles.inputWrap}>
-                <Mail size={18} />
+                <Mail aria-hidden="true" size={18} />
                 <input
                   type="email"
                   autoComplete="email"
                   value={form.email}
                   onChange={(event) => updateField("email", event.target.value)}
-                  placeholder="you@company.com"
+                  placeholder="voce@empresa.com"
                 />
               </div>
             </label>
 
             <label className={styles.field}>
-              <span>Password</span>
+              <span>Senha</span>
               <div className={styles.inputWrap}>
-                <LockKeyhole size={18} />
+                <LockKeyhole aria-hidden="true" size={18} />
                 <input
                   type="password"
                   autoComplete={isRegister ? "new-password" : "current-password"}
                   value={form.password}
                   onChange={(event) => updateField("password", event.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Digite sua senha"
                 />
               </div>
             </label>
 
             {isRegister && (
               <label className={styles.field}>
-                <span>Confirm password</span>
+                <span>Confirmar senha</span>
                 <div className={styles.inputWrap}>
-                  <LockKeyhole size={18} />
+                  <LockKeyhole aria-hidden="true" size={18} />
                   <input
                     type="password"
                     autoComplete="new-password"
                     value={form.confirmPassword}
-                    onChange={(event) => updateField("confirmPassword", event.target.value)}
-                    placeholder="Confirm your password"
+                    onChange={(event) =>
+                      updateField("confirmPassword", event.target.value)
+                    }
+                    placeholder="Repita sua senha"
                   />
                 </div>
               </label>
@@ -212,9 +263,13 @@ export function AuthPage() {
             {error && <p className={styles.error}>{error}</p>}
 
             <button className={styles.submitButton} type="submit" disabled={isLoading}>
-              {isLoading ? "Please wait..." : submitLabel}
+              {isLoading ? "Aguarde..." : submitLabel}
             </button>
           </form>
+
+          <Link to="/" className={styles.backLink}>
+            Voltar para a página inicial
+          </Link>
         </div>
       </section>
     </main>

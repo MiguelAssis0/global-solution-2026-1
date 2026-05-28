@@ -1,17 +1,51 @@
 import { Link } from "react-router-dom";
+import { Home, Leaf, MapPinned } from "lucide-react";
+import styles from "./NotFound.module.css";
 
 export function NotFound() {
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "2rem", background: "#08110f", color: "#d8eedd" }}>
-      <div style={{ maxWidth: 520, textAlign: "center" }}>
-        <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Página não encontrada</h1>
-        <p style={{ marginBottom: "1.5rem", color: "#a3b89f" }}>
-          O caminho não existe. Volte para a análise territorial principal.
-        </p>
-        <Link to="/" style={{ color: "var(--color-accent)", fontWeight: 700 }}>
-          Ir para GeoAptidão
+    <main className={styles.page}>
+      <section className={styles.content} aria-labelledby="not-found-title">
+        <Link to="/" className={styles.brand} aria-label="Araterra">
+          <Leaf aria-hidden="true" />
+          <span>Araterra</span>
         </Link>
-      </div>
+
+        <p className={styles.kicker}>Página não encontrada</p>
+        <h1 id="not-found-title">Esse caminho não existe no mapa.</h1>
+        <p className={styles.text}>
+          A rota acessada não está disponível. Volte para a página inicial ou
+          abra diretamente o ambiente de análise territorial.
+        </p>
+
+        <div className={styles.actions}>
+          <Link to="/" className={styles.primaryLink}>
+            <Home aria-hidden="true" />
+            Página inicial
+          </Link>
+          <Link to="/map" className={styles.secondaryLink}>
+            <MapPinned aria-hidden="true" />
+            Abrir mapa
+          </Link>
+        </div>
+      </section>
+
+      <aside className={styles.preview} aria-hidden="true">
+        <div className={styles.panelHeader}>
+          <span>Área não localizada</span>
+          <strong>404</strong>
+        </div>
+        <div className={styles.panelMap}>
+          <span className={styles.areaOne} />
+          <span className={styles.areaTwo} />
+          <span className={styles.areaThree} />
+        </div>
+        <div className={styles.panelRows}>
+          <span>Revise o endereço digitado</span>
+          <span>Retorne para uma rota válida</span>
+          <span>Continue a análise pelo mapa</span>
+        </div>
+      </aside>
     </main>
   );
 }

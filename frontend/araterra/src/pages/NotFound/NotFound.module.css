@@ -1,0 +1,242 @@
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: clamp(36px, 6vw, 82px);
+  align-items: center;
+  min-height: 100vh;
+  padding: clamp(28px, 6vw, 84px) clamp(24px, 7vw, 112px);
+  overflow: hidden;
+  color: #ffffff;
+  background:
+    linear-gradient(180deg, #173760 0%, rgba(23, 55, 96, 0.88) 36%, rgba(23, 55, 96, 0.22) 72%),
+    url("/images/araterra-hero-field.png") center / cover;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.brand {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.brand svg {
+  width: 30px;
+  height: 30px;
+  color: #61c45d;
+  stroke-width: 2.2;
+}
+
+.kicker {
+  margin: 80px 0 14px;
+  color: #9be36d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.content h1 {
+  margin: 0;
+  max-width: 690px;
+  color: #ffffff;
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 800;
+  line-height: 1.02;
+}
+
+.text {
+  max-width: 590px;
+  margin: 24px 0 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.62;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.primaryLink,
+.secondaryLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
+  color: #ffffff;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  transition:
+    transform var(--transition-normal),
+    background var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+.primaryLink {
+  background: #2f64b8;
+  box-shadow: 0 14px 30px rgba(18, 48, 82, 0.28);
+}
+
+.secondaryLink {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.primaryLink:hover,
+.secondaryLink:hover {
+  transform: translateY(-2px);
+}
+
+.secondaryLink:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.primaryLink svg,
+.secondaryLink svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+}
+
+.preview {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 18px 48px rgba(4, 22, 42, 0.24);
+  backdrop-filter: blur(16px);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 14px;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.panelHeader span {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.panelHeader strong {
+  color: #9be36d;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.panelMap {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+  border-radius: 8px;
+  background:
+    linear-gradient(30deg, rgba(79, 164, 84, 0.9), rgba(136, 184, 74, 0.84)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0 2px, transparent 2px 22px);
+}
+
+.panelMap::before {
+  position: absolute;
+  inset: -30px;
+  background:
+    linear-gradient(122deg, transparent 0 36%, rgba(70, 43, 23, 0.7) 36% 40%, transparent 40% 100%),
+    linear-gradient(18deg, transparent 0 58%, rgba(24, 93, 50, 0.34) 58% 63%, transparent 63% 100%);
+  content: "";
+}
+
+.areaOne,
+.areaTwo,
+.areaThree {
+  position: absolute;
+  border: 3px solid rgba(255, 255, 255, 0.92);
+  background: rgba(47, 100, 184, 0.24);
+}
+
+.areaOne {
+  top: 42px;
+  left: 36px;
+  width: 96px;
+  height: 72px;
+  border-radius: 44% 56% 48% 52%;
+}
+
+.areaTwo {
+  right: 40px;
+  bottom: 38px;
+  width: 112px;
+  height: 78px;
+  border-radius: 54% 46% 62% 38%;
+}
+
+.areaThree {
+  top: 84px;
+  right: 104px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+}
+
+.panelRows {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.panelRows span {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+@media (max-width: 920px) {
+  .page {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
+
+  .preview {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 520px) {
+  .page {
+    padding: 24px;
+  }
+
+  .kicker {
+    margin-top: 62px;
+  }
+
+  .content h1 {
+    font-size: 2.7rem;
+  }
+
+  .actions {
+    display: grid;
+  }
+}
