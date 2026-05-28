@@ -21,8 +21,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
+        ex.printStackTrace();
         Map<String, Object> error = new HashMap<>();
-        error.put("message", "Erro ao processar análise geoespacial.");
+        error.put("message", "Erro ao processar análise geoespacial." );
         error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }

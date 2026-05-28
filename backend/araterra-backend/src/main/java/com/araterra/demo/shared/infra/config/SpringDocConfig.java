@@ -1,4 +1,4 @@
-package com.fiap.hackgov.shared.infra.config;
+package com.araterra.demo.shared.infra.config;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
