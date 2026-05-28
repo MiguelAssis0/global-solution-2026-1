@@ -1,9 +1,7 @@
 package com.araterra.demo.auth.internal.controllers;
 
 
-import com.araterra.demo.auth.internal.DTOs.LoginRequestDTO;
-import com.araterra.demo.auth.internal.DTOs.LoginResponseDTO;
-import com.araterra.demo.auth.internal.DTOs.RegisterRequestDTO;
+import com.araterra.demo.auth.internal.DTOs.*;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
 import com.araterra.demo.auth.internal.services.AuthService;
@@ -15,10 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -85,5 +80,32 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody @Valid RefreshTokenRequestDTO request) {
         return ResponseEntity.ok(authService.refreshToken(request));
+    }
+
+    @Operation(summary = "Get User Theme", description = "Get the current user's theme preference")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Theme retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Invalid token")
+    })
+    @GetMapping("/user-theme")
+    public ResponseEntity<UserThemeDTO> getUserTheme(HttpServletRequest request) {
+        String token = tokenService.extractToken(request);
+        String email = tokenService.getSubject(token);
+        return ResponseEntity.ok(authService.getUserTheme(email));
+    }
+
+    @Operation(summary = "Update User Theme", description = "Update the current user's theme preference (light, dark, or system)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Theme updated successfully"),
+            @ApiResponse(responseCode = "401", description = "Invalid token"),
+            @ApiResponse(responseCode = "400", description = "Invalid theme value")
+    })
+    @PatchMapping("/user-theme")
+    public ResponseEntity<UserThemeDTO> updateUserTheme(
+            @RequestBody @Valid UserThemeDTO userTheme,
+            HttpServletRequest request) {
+        String token = tokenService.extractToken(request);
+        String email = tokenService.getSubject(token);
+        return ResponseEntity.ok(authService.updateUserTheme(email, userTheme));
     }
 }

@@ -5,21 +5,21 @@ import {
   CheckCircle2,
   CloudSun,
   FileText,
-  Globe2,
   Layers,
   Leaf,
+  Moon,
   Route,
   Sparkles,
+  Sun,
   Target,
   Zap,
 } from "lucide-react";
 import styles from "./HomePage.module.css";
+import { useToggleTheme } from "../../hooks/useToggleTheme";
 
-const heroImage =
-  "/images/araterra-hero-field.png";
+const heroImage = "/images/araterra-hero-field.png";
 
-const fieldImage =
-  "/images/araterra-field-strip.png";
+const fieldImage = "/images/araterra-field-strip.png";
 
 const solutions = [
   {
@@ -101,6 +101,8 @@ const dataPoints = [
 export function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const { theme, toggleTheme } = useToggleTheme();
+  
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
 
@@ -133,6 +135,16 @@ export function HomePage() {
           </nav>
 
           <div className={styles.headerActions}>
+            <button
+              type="button"
+              className={styles.themeButton}
+              onClick={toggleTheme}
+              aria-label={
+                theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"
+              }
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
             <Link to="/map" className={styles.headerMapLink}>
               Abrir mapa
             </Link>
@@ -154,7 +166,9 @@ export function HomePage() {
 
           <div className={styles.heroInner}>
             <div className={styles.heroContent}>
-              <p className={styles.eyebrow}>Inteligência territorial agrícola</p>
+              <p className={styles.eyebrow}>
+                Inteligência territorial agrícola
+              </p>
               <h1 id="hero-title">Araterra</h1>
               <p className={styles.heroText}>
                 Uma plataforma geoespacial para avaliar áreas rurais com mapas,
@@ -312,9 +326,9 @@ export function HomePage() {
 
             <div className={styles.numbers}>
               {dataPoints.map((point) => (
-                <div className={styles.numberItem} key={point.label}>
+                <div className={styles.numberItem } key={point.label}>
                   <strong>{point.value}</strong>
-                  <span>{point.label}</span>
+                  <span className={styles.textPoints}>{point.label}</span>
                 </div>
               ))}
             </div>

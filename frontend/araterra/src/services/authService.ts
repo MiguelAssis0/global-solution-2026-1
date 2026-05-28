@@ -21,6 +21,12 @@ export type AuthResponse = {
   requiresTwoFactor?: boolean;
 };
 
+export type ThemePreference = "light" | "dark" | "system";
+
+export type UserThemeResponse = {
+  theme: ThemePreference;
+};
+
 export const saveToken = (token: string) => {
   localStorage.setItem(TOKEN_KEY, token);
 };
@@ -69,5 +75,19 @@ export const register = async (data: RegisterPayload) => {
     saveRefreshToken(response.data.refreshToken);
   }
 
+  return response.data;
+};
+
+export const fetchUserTheme = async (): Promise<UserThemeResponse> => {
+  const response = await api.get<UserThemeResponse>("/auth/user-theme");
+  return response.data;
+};
+
+export const updateUserTheme = async (
+  theme: ThemePreference,
+): Promise<UserThemeResponse> => {
+  const response = await api.patch<UserThemeResponse>("/auth/user-theme", {
+    theme,
+  });
   return response.data;
 };

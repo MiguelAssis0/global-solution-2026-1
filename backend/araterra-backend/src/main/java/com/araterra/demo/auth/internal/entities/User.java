@@ -52,6 +52,8 @@ public class User implements UserDetails {
 
     private LocalDateTime lastLogin;
 
+    private String theme;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

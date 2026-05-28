@@ -3,6 +3,8 @@ package com.araterra.demo.auth.internal.services;
 import com.araterra.demo.auth.internal.DTOs.LoginRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.LoginResponseDTO;
 import com.araterra.demo.auth.internal.DTOs.RegisterRequestDTO;
+import com.araterra.demo.auth.internal.DTOs.UpdateThemeRequestDTO;
+import com.araterra.demo.auth.internal.DTOs.UserThemeDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
 import com.araterra.demo.auth.internal.entities.enums.Roles;
@@ -111,5 +113,30 @@ public class AuthService {
         String refreshToken = tokenService.generateRefreshToken(savedUser);
 
         return new LoginResponseDTO(accessToken, refreshToken, false);
+    }
+
+    public void updateUserTheme(String email, UpdateThemeRequestDTO request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+
+        user.setTheme(request.theme());
+        userRepository.save(user);
+    }
+
+    public UserThemeDTO getUserTheme(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+
+        return new UserThemeDTO(user.getTheme() != null ? user.getTheme() : "system");
+    }
+
+    public UserThemeDTO updateUserTheme(String email, UserThemeDTO userTheme) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+
+        user.setTheme(userTheme.theme());
+        userRepository.save(user);
+
+        return new UserThemeDTO(user.getTheme());
     }
 }

@@ -5,13 +5,15 @@
   --color-surface-2: #182230;
   --color-border: #243041;
 
+  --color-header: #ffffff;
+  
   /* Texto (mais leitura e hierarquia) */
   --color-text: #e6f1ff;
   --color-text-2: #9bb0c3;
   --color-text-3: #5c738a;
 
   /* Acento principal (menos neon, mais tech premium) */
-  --color-accent: #5aa9ff;
+  --color-accent: #3da446;
   --color-accent-2: #f5c542;
   --color-accent-3: #ff6b4a;
 
@@ -28,6 +30,7 @@
   --color-layer-power: #f2c94c;
   --color-layer-satellite: #9b8cff;
   --color-layer-ndvi: #6fd3ff;
+
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -72,6 +75,32 @@
   --sidebar-width: 340px;
 }
 
+:root[data-theme="light"] {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #f5f7fb;
+  --color-border: #d2dce8;
+
+  --color-header: #ffffff;
+  --color-text: #111827;
+  --color-text-2: #4b5563;
+  --color-text-3: #6b7280;
+
+  --color-accent: #3da446;
+  --color-accent-2: #d97706;
+  --color-accent-3: #dc2626;
+  --color-purple: #7c3aed;
+
+  --color-score-high: #2563eb;
+  --color-score-mid: #eab308;
+  --color-score-low: #dc2626;
+
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 20px rgba(15, 23, 42, 0.12);
+  --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.14);
+  --shadow-accent: 0 4px 20px rgba(37, 99, 235, 0.12);
+}
+
 *,
 *::before,
 *::after {
@@ -111,7 +140,7 @@ a {
 }
 
 .leaflet-container {
-     background: #0a0f16;
+  background: var(--color-surface);
 }
 
 .leaflet-popup-content-wrapper,
@@ -120,6 +149,10 @@ a {
   color: var(--color-text);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme="light"] .leaflet-tile {
+  filter: none;
 }
 
 .leaflet-tile {
