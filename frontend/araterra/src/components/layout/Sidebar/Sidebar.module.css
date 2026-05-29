@@ -6,12 +6,12 @@
 .heading {
   margin-bottom: 16px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .heading p {
   margin: 0;
-  color: #ffffff;
+  color: var(--color-text);
   font-size: 1rem;
   font-weight: 800;
   line-height: 1.2;
@@ -20,7 +20,7 @@
 .heading span {
   display: block;
   margin-top: 6px;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--color-text-2);
   font-size: 0.86rem;
   line-height: 1.45;
 }
