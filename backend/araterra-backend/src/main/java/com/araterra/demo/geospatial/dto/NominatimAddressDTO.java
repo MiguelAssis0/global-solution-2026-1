@@ -8,6 +8,12 @@ public record NominatimAddressDTO(
         String railway,
         String suburb,
         String city,
-        String state
+        String state,
+        String country,
+        String country_code,
+        String town,
+        String village,
+        String municipality,
+        String county
 ) {
 }

@@ -25,7 +25,7 @@ public class AnalysisService {
                 UNKNOWN_ROAD
         );
         String nearestInfrastructureName = firstNonBlank(
-                nominatimInfrastructureName(nominatim),
+                nominatimInfrastructureName(nominatim, nominatim != null ? nominatimService.extractCityInfo(nominatim).orElse(null) : null),
                 UNKNOWN_INFRASTRUCTURE
         );
         InfrastructureType nearestInfrastructureType = nominatimInfrastructureType(nominatim);
@@ -128,7 +128,12 @@ public class AnalysisService {
         );
     }
 
-    private String nominatimInfrastructureName(NominatimResponseDTO response) {
+    private String nominatimInfrastructureName(NominatimResponseDTO response, CityInfoDTO cityInfo) {
+        // If we have enriched city info from Nominatim and the infrastructure type is CITY, return enriched format
+        if (cityInfo != null && nominatimInfrastructureType(response) == InfrastructureType.CITY) {
+            return String.format("%s, %s • %s", cityInfo.cityName(), cityInfo.state(), cityInfo.country());
+        }
+
         if (response == null) {
             return null;
         }

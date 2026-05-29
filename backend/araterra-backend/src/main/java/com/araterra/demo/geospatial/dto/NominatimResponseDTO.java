@@ -10,6 +10,8 @@ public record NominatimResponseDTO(
         @JsonProperty("class")
         String nominatimClass,
         String type,
+        String lat,
+        String lon,
         NominatimAddressDTO address
 ) {
 }
