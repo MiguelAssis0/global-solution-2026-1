@@ -2,6 +2,12 @@ spring:
   application:
     name: demo
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+      file-size-threshold: 0
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -24,6 +30,8 @@ spring:
 
 server:
   port: 8080
+  tomcat:
+    max-swallow-size: -1
 
 springdoc:
   api-docs:
@@ -51,7 +59,7 @@ data:
 
 storage:
   root-dir: ${STORAGE_ROOT:/storage}
-  avatar-max-size: 5MB
+  avatar-max-size-mb: 20
 
 api:
   security:

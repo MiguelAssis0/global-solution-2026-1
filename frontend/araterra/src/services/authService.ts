@@ -130,7 +130,7 @@ export const uploadAvatar = async (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post(
+  const response = await api.patch(
     "/auth/me/avatar",
     formData,
     {
