@@ -10,9 +10,6 @@ interface ToolbarProps {
 }
 
 const layerLabels: Record<LayerName, string> = {
-  roads: "Estradas",
-  power: "Energia",
-  agriculturalAreas: "Áreas",
   satellite: "Satélite",
   ndvi: "NDVI",
 };

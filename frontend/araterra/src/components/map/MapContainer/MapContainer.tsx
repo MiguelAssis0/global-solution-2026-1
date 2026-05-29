@@ -10,9 +10,6 @@ import {
 import L from "leaflet";
 import { useMapStore } from "../../../store/mapStore";
 import { DrawControl } from "../DrawControl/DrawControl";
-import { RoadsLayer } from "../MapLayers/RoadsLayer";
-import { PowerLayer } from "../MapLayers/PowerLayer";
-import { AreasLayer } from "../MapLayers/AreasLayer";
 import { SatelliteLayer } from "../MapLayers/SatelliteLayer";
 import { NdviLayer } from "../MapLayers/NdviLayer";
 import type { DrawMode } from "../../../types/map.types";
@@ -102,9 +99,6 @@ export function MapSurface({
   onBoundsChange,
   onPointSelect,
   onPolygonComplete,
-  roads,
-  infrastructure,
-  areas,
 }: MapSurfaceProps) {
   const drawVertices = useMapStore((state) => state.drawVertices);
   const activeLayers = useMapStore((state) => state.activeLayers);
@@ -144,12 +138,7 @@ export function MapSurface({
         />
         {activeLayers.satellite && <SatelliteLayer />}
         {activeLayers.ndvi && <NdviLayer />}
-        {activeLayers.agriculturalAreas && (
-          <AreasLayer features={areas?.features ?? []} />
-        )}
-        {activeLayers.roads && <RoadsLayer features={roads?.features ?? []} />}
-        {activeLayers.power && <PowerLayer infrastructure={infrastructure} />}
-        <MapEventHandler
+       <MapEventHandler
           drawMode={drawMode}
           onBoundsChange={onBoundsChange}
           onPointSelect={onPointSelect}

@@ -1,4 +1,4 @@
-export type LayerName = "roads" | "power" | "agriculturalAreas" | "satellite" | "ndvi";
+export type LayerName = "satellite" | "ndvi";
 export type DrawMode = "point" | "polygon" | "idle";
 export type StatusType = "loading" | "done" | "error";
 

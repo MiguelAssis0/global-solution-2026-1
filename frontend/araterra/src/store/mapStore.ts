@@ -27,9 +27,6 @@ interface MapStore {
 export const useMapStore = create<MapStore>((set) => ({
   drawMode: "idle",
   activeLayers: {
-    roads: true,
-    power: true,
-    agriculturalAreas: true,
     satellite: false,
     ndvi: false,
   },

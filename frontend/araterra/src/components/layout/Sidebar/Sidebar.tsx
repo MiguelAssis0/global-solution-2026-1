@@ -45,7 +45,7 @@ export function Sidebar({
         <>
           <ScoreBlock result={analysis} loading={loading} />
           <WeatherBlock weather={weather} loading={weatherLoading} error={weatherError} />
-          <InfraBlock infra={analysis.infra} />
+          <InfraBlock infra={analysis.infra} analysis={analysis} />
           <AreaStatsBlock analysis={analysis} />
           <AiInsightBlock
             insight={insight}
