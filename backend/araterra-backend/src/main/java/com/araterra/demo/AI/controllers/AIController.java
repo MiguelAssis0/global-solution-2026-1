@@ -1,11 +1,14 @@
 package com.araterra.demo.AI.controllers;
 
+import com.araterra.demo.AI.dtos.LocationAnalysisRequestDTO;
+import com.araterra.demo.AI.dtos.LocationAnalysisResponseDTO;
 import com.araterra.demo.AI.dtos.RequestAI;
 import com.araterra.demo.AI.dtos.ResponseAI;
 import com.araterra.demo.AI.services.AiService;
 import com.araterra.demo.auth.internal.entities.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +28,16 @@ public class AIController {
     @PostMapping
     public ResponseEntity<ResponseAI> generateResponse(@RequestBody RequestAI request, @AuthenticationPrincipal User user) {
         ResponseAI response = aiService.generateResponse(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Generate geospatial analysis from coordinates", security = @SecurityRequirement(name = "bearer-key"))
+    @PostMapping("/location-analysis")
+    public ResponseEntity<LocationAnalysisResponseDTO> generateLocationAnalysis(
+            @Valid @RequestBody LocationAnalysisRequestDTO request,
+            @AuthenticationPrincipal User user
+    ) {
+        LocationAnalysisResponseDTO response = aiService.generateLocationAnalysis(request);
         return ResponseEntity.ok(response);
     }
 }

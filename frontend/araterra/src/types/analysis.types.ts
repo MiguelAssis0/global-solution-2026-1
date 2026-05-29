@@ -18,6 +18,40 @@ export interface WeatherData {
   weeklyRain: number;
 }
 
+export interface LocationContext {
+  country: string | null;
+  region: string | null;
+}
+
+export interface AiBiomeAnalysis {
+  name: string | null;
+  category: string | null;
+  confidence: "HIGH" | "MEDIUM" | "LOW" | null;
+}
+
+export interface AiInfrastructureAnalysis {
+  name: string | null;
+  distanceKm: number | null;
+}
+
+export interface AiHighwayAnalysis {
+  name: string | null;
+  distanceKm: number | null;
+  roadType: string | null;
+}
+
+export interface AiLocationAnalysis {
+  input: {
+    latitude: number;
+    longitude: number;
+  };
+  locationContext: LocationContext | null;
+  biome: AiBiomeAnalysis | null;
+  nearestSubstation: AiInfrastructureAnalysis | null;
+  nearestPort: AiInfrastructureAnalysis | null;
+  nearestHighway: AiHighwayAnalysis | null;
+}
+
 export interface InfraPoint {
   name: string;
   type: string;

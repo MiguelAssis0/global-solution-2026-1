@@ -14,7 +14,7 @@ import { useAiInsight } from "../../hooks/useAiInsight";
 export function MapPage() {
   const { handleBoundsChange } = useMapBounds();
   const { current, isLoading, error, runPointAnalysis, runPolygonAnalysis } = useAnalysis();
-  const { insight, loading: insightLoading, error: insightError, requestInsight } = useAiInsight();
+  const { insight, analysisData, loading: insightLoading, error: insightError, requestInsight } = useAiInsight();
   const bounds = useMapStore((state) => state.bounds);
   const drawMode = useMapStore((state) => state.drawMode);
   const activeLayers = useMapStore((state) => state.activeLayers);
@@ -53,6 +53,7 @@ export function MapPage() {
             weatherLoading={weather.isLoading}
             weatherError={weather.error?.message ?? null}
             insight={insight}
+            aiAnalysis={analysisData}
             insightLoading={insightLoading}
             insightError={insightError}
             onGenerateInsight={requestInsight}

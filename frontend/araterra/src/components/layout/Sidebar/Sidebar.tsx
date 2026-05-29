@@ -1,4 +1,4 @@
-import type { AnalysisResult, WeatherData } from "../../../types/analysis.types";
+import type { AiLocationAnalysis, AnalysisResult, WeatherData } from "../../../types/analysis.types";
 import { AiInsightBlock } from "../../analysis/AiInsightBlock/AiInsightBlock";
 import { AreaStatsBlock } from "../../analysis/AreaStatsBlock/AreaStatsBlock";
 import { EmptyState } from "../../analysis/EmptyState/EmptyState";
@@ -15,6 +15,7 @@ interface SidebarProps {
   weatherLoading: boolean;
   weatherError: string | null;
   insight: string | null;
+  aiAnalysis: AiLocationAnalysis | null;
   insightLoading: boolean;
   insightError: string | null;
   onGenerateInsight: () => void;
@@ -28,6 +29,7 @@ export function Sidebar({
   weatherLoading,
   weatherError,
   insight,
+  aiAnalysis,
   insightLoading,
   insightError,
   onGenerateInsight,
@@ -45,8 +47,8 @@ export function Sidebar({
         <>
           <ScoreBlock result={analysis} loading={loading} />
           <WeatherBlock weather={weather} loading={weatherLoading} error={weatherError} />
-          <InfraBlock infra={analysis.infra} analysis={analysis} />
-          <AreaStatsBlock analysis={analysis} />
+          <InfraBlock infra={analysis.infra} analysis={analysis} aiAnalysis={aiAnalysis} />
+          <AreaStatsBlock analysis={analysis} aiAnalysis={aiAnalysis} />
           <AiInsightBlock
             insight={insight}
             loading={insightLoading}
