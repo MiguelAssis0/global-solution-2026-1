@@ -6,16 +6,25 @@ interface ScoreBlockProps {
   loading: boolean;
 }
 
-const classificationColor = {
-  alta: "var(--color-score-high)",
-  media: "var(--color-score-mid)",
-  baixa: "var(--color-score-low)",
+const classificationStyles = {
+  alta: {
+    bg: "var(--color-badge-high-bg)",
+    color: "var(--color-badge-high-text)",
+  },
+  media: {
+    bg: "var(--color-badge-mid-bg)",
+    color: "var(--color-badge-mid-text)",
+  },
+  baixa: {
+    bg: "var(--color-badge-low-bg)",
+    color: "var(--color-badge-low-text)",
+  },
 };
 
 export function ScoreBlock({ result, loading }: ScoreBlockProps) {
   if (loading) {
     return (
-      <div style={{ padding: 20, background: "rgba(255,255,255,0.08)", borderRadius: 8 }}>
+      <div style={{ padding: 20, background: "var(--color-card-bg)", borderRadius: 8 }}>
         Carregando análise...
       </div>
     );
@@ -38,8 +47,8 @@ export function ScoreBlock({ result, loading }: ScoreBlockProps) {
         marginBottom: 18,
         padding: 20,
         borderRadius: 8,
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.14)",
+        background: "var(--color-card-bg)",
+        border: "1px solid var(--color-card-border)",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, marginBottom: 18 }}>
@@ -53,8 +62,8 @@ export function ScoreBlock({ result, loading }: ScoreBlockProps) {
           style={{
             padding: "8px 14px",
             borderRadius: 999,
-            background: classificationColor[classification],
-            color: "#173760",
+            background: classificationStyles[classification].bg,
+            color: classificationStyles[classification].color,
             fontWeight: 800,
           }}
         >
@@ -68,7 +77,7 @@ export function ScoreBlock({ result, loading }: ScoreBlockProps) {
               <span>{item.label}</span>
               <span>{item.value != null ? `${item.value}%` : "--"}</span>
             </div>
-            <div style={{ height: 8, borderRadius: 999, background: "rgba(255,255,255,0.12)" }}>
+            <div style={{ height: 8, borderRadius: 999, background: "var(--color-progress-track)" }}>
               <div style={{ width: `${item.value ?? 0}%`, height: "100%", background: "var(--color-accent)", borderRadius: 999 }} />
             </div>
           </div>

@@ -20,8 +20,8 @@ export function AreaStatsBlock({ analysis, aiAnalysis }: AreaStatsBlockProps) {
         marginBottom: 18,
         padding: 20,
         borderRadius: 8,
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.14)",
+        background: "var(--color-card-bg)",
+        border: "1px solid var(--color-card-border)",
       }}
     >
       <div style={{ marginBottom: 16, fontWeight: 800 }}>Resumo da área</div>

@@ -51,8 +51,8 @@ export function InfraBlock({ infra, analysis, aiAnalysis }: InfraBlockProps) {
         marginBottom: 18,
         padding: 20,
         borderRadius: 8,
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.14)",
+        background: "var(--color-card-bg)",
+        border: "1px solid var(--color-card-border)",
       }}
     >
       <div style={{ marginBottom: 16, fontWeight: 800 }}>Infraestrutura</div>
@@ -63,7 +63,7 @@ export function InfraBlock({ infra, analysis, aiAnalysis }: InfraBlockProps) {
           { label: "Porto", display: portDisplay },
           { label: "Rodovia principal", display: highwayDisplay },
         ].map((item) => (
-          <div key={item.label} style={{ padding: 14, borderRadius: 8, background: "rgba(255,255,255,0.08)" }}>
+          <div key={item.label} style={{ padding: 14, borderRadius: 8, background: "var(--color-card-inner-bg)" }}>
             <p style={{ margin: 0, color: "var(--color-text-2)", fontSize: "0.83rem" }}>{item.label}</p>
             <p style={{ margin: "6px 0 0", fontSize: "0.98rem", color: "var(--color-text)", fontWeight: 700 }}>
               {item.isLoading ? "Carregando..." : item.display || (item.value ? `${item.value.name} • ${formatDistance(item.value.distKm)}` : "Nenhum dado disponível")}

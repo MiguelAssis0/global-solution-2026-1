@@ -18,7 +18,7 @@ function parseInlineMarkdown(value: string): ReactNode[] {
     }
     if (token.startsWith("`") && token.endsWith("`")) {
       return (
-        <code key={index} style={{ background: "rgba(255,255,255,0.1)", padding: "2px 4px", borderRadius: 4 }}>
+        <code key={index} style={{ background: "var(--color-code-bg)", padding: "2px 4px", borderRadius: 4 }}>
           {token.slice(1, -1)}
         </code>
       );
@@ -60,7 +60,7 @@ function renderMarkdown(markdown: string): ReactNode[] {
   const flushCodeBlock = () => {
     if (!codeBlock) return;
     output.push(
-      <pre key={output.length} style={{ margin: "0 0 1rem", padding: 14, background: "rgba(255,255,255,0.08)", borderRadius: 8, overflowX: "auto" }}>
+      <pre key={output.length} style={{ margin: "0 0 1rem", padding: 14, background: "var(--color-codeblock-bg)", borderRadius: 8, overflowX: "auto" }}>
         <code>{codeBlock.join("\n")}</code>
       </pre>,
     );
@@ -147,7 +147,7 @@ function renderMarkdown(markdown: string): ReactNode[] {
 
 export function AiInsightBlock({ insight, loading, error, onGenerate }: AiInsightBlockProps) {
   return (
-    <section style={{ padding: 20, borderRadius: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)" }}>
+    <section style={{ padding: 20, borderRadius: 8, background: "var(--color-card-bg)", border: "1px solid var(--color-card-border)" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
         <div style={{ fontWeight: 700 }}>Análise com IA</div>
         <button type="button" onClick={onGenerate} disabled={loading} style={{ padding: "10px 14px", borderRadius: 8, border: "none", background: "var(--color-accent)", color: "#173760", cursor: "pointer", fontWeight: 800 }}>

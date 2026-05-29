@@ -8,8 +8,8 @@ export function EmptyState({ loading }: EmptyStateProps) {
       style={{
         padding: 22,
         borderRadius: 8,
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.14)",
+        background: "var(--color-card-bg)",
+        border: "1px solid var(--color-card-border)",
         textAlign: "center",
       }}
     >

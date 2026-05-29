@@ -10,14 +10,14 @@ const sectionStyle = {
   marginBottom: 18,
   padding: 20,
   borderRadius: 8,
-  background: "rgba(255,255,255,0.08)",
-  border: "1px solid rgba(255,255,255,0.14)",
+  background: "var(--color-card-bg)",
+  border: "1px solid var(--color-card-border)",
 };
 
 const metricStyle = {
   padding: 14,
   borderRadius: 8,
-  background: "rgba(255,255,255,0.08)",
+  background: "var(--color-card-inner-bg)",
 };
 
 export function WeatherBlock({ weather, loading, error }: WeatherBlockProps) {
@@ -27,7 +27,7 @@ export function WeatherBlock({ weather, loading, error }: WeatherBlockProps) {
 
   if (error) {
     return (
-      <div style={{ ...sectionStyle, background: "rgba(255,107,74,0.12)", color: "var(--color-score-low)" }}>
+      <div style={{ ...sectionStyle, background: "var(--color-error-bg)", border: "1px solid var(--color-error-border)", color: "var(--color-score-low)" }}>
         {error}
       </div>
     );

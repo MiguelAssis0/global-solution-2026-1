@@ -73,6 +73,26 @@
   --header-height: 52px;
   --toolbar-height: 44px;
   --sidebar-width: 340px;
+
+  /* Adaptive Card/Sidebar variables */
+  --color-card-bg: rgba(255, 255, 255, 0.08);
+  --color-card-border: rgba(255, 255, 255, 0.14);
+  --color-card-inner-bg: rgba(255, 255, 255, 0.08);
+  --color-progress-track: rgba(255, 255, 255, 0.12);
+  --color-code-bg: rgba(255, 255, 255, 0.1);
+  --color-codeblock-bg: rgba(255, 255, 255, 0.08);
+
+  /* Error container variables */
+  --color-error-bg: rgba(255, 107, 74, 0.12);
+  --color-error-border: rgba(255, 133, 110, 0.22);
+
+  /* Status Badges */
+  --color-badge-high-bg: rgba(79, 179, 255, 0.15);
+  --color-badge-high-text: #4fb3ff;
+  --color-badge-mid-bg: rgba(242, 201, 76, 0.15);
+  --color-badge-mid-text: #f2c94c;
+  --color-badge-low-bg: rgba(255, 107, 74, 0.15);
+  --color-badge-low-text: #ff6b4a;
 }
 
 :root[data-theme="light"] {
@@ -99,6 +119,26 @@
   --shadow-md: 0 4px 20px rgba(15, 23, 42, 0.12);
   --shadow-lg: 0 8px 32px rgba(15, 23, 42, 0.14);
   --shadow-accent: 0 4px 20px rgba(37, 99, 235, 0.12);
+
+  /* Adaptive Card/Sidebar variables */
+  --color-card-bg: rgba(0, 0, 0, 0.03);
+  --color-card-border: rgba(0, 0, 0, 0.08);
+  --color-card-inner-bg: rgba(0, 0, 0, 0.04);
+  --color-progress-track: rgba(0, 0, 0, 0.08);
+  --color-code-bg: rgba(0, 0, 0, 0.06);
+  --color-codeblock-bg: rgba(0, 0, 0, 0.04);
+
+  /* Error container variables */
+  --color-error-bg: rgba(220, 38, 38, 0.08);
+  --color-error-border: rgba(220, 38, 38, 0.16);
+
+  /* Status Badges */
+  --color-badge-high-bg: rgba(37, 99, 235, 0.1);
+  --color-badge-high-text: #2563eb;
+  --color-badge-mid-bg: rgba(234, 179, 8, 0.1);
+  --color-badge-mid-text: #b45309; /* Darker gold for contrast on light mode */
+  --color-badge-low-bg: rgba(220, 38, 38, 0.1);
+  --color-badge-low-text: #dc2626;
 }
 
 *,
