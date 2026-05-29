@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowUp,
@@ -18,6 +18,7 @@ import styles from "./HomePage.module.css";
 import { useToggleTheme } from "../../hooks/useToggleTheme";
 
 const heroImage = "/images/araterra-hero-field.png";
+const heroVideo = "/videos/hero.mp4";
 
 const fieldImage = "/images/araterra-field-strip.png";
 
@@ -100,19 +101,142 @@ const dataPoints = [
 
 export function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const heroScrollRef = useRef<HTMLElement | null>(null);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+  const progressFillRef = useRef<HTMLDivElement | null>(null);
+  const scrollHintRef = useRef<HTMLDivElement | null>(null);
 
   const { theme, toggleTheme } = useToggleTheme();
-  
+
+  // ─── Header scroll detection (unchanged) ─────────────────────────────────
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    const getScrollTop = () =>
+      Math.max(
+        window.scrollY,
+        document.documentElement.scrollTop,
+        document.body.scrollTop,
+        document.getElementById("root")?.scrollTop ?? 0,
+      );
+
+    const onScroll = () => setIsScrolled(getScrollTop() > 24);
+    const root = document.getElementById("root");
 
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
+    root?.addEventListener("scroll", onScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      root?.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
+  // ─── Scroll-driven video scrubbing ───────────────────────────────────────
+  useEffect(() => {
+    const hero = heroScrollRef.current;
+    const video = heroVideoRef.current;
+    if (!hero || !video) return;
+
+    let raf = 0;
+
+    /**
+     * Updates --hero-scroll-distance on the section so the sticky container
+     * has exactly enough scroll space to play the whole video.
+     * Formula: 1 second of video ≈ 520 px of scroll (feels natural).
+     */
+    const setScrollHeight = () => {
+      const dur =
+        Number.isFinite(video.duration) && video.duration > 0
+          ? video.duration
+          : 0;
+      const dist = Math.max(
+        window.innerHeight * 2.5,
+        dur > 0 ? dur * 520 : window.innerHeight * 2.5,
+      );
+      hero.style.setProperty(
+        "--hero-scroll-distance",
+        `${Math.round(dist)}px`,
+      );
+    };
+
+    /**
+     * Core scrubbing logic.
+     *
+     * getBoundingClientRect() always returns viewport-relative coordinates,
+     * regardless of whether the page scrolls via window or a #root container.
+     *
+     * When scroll = 0  →  rect.top = 0          →  progress = 0
+     * When fully past  →  rect.top = -scrollDist →  progress = 1
+     */
+    const syncVideo = () => {
+      raf = 0;
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+
+      const rect = hero.getBoundingClientRect();
+      const viewportH = window.innerHeight;
+
+      // pixels the section-top has moved above the viewport top
+      const scrolledPx = -rect.top;
+      // total scrollable distance inside this section
+      const totalDist = Math.max(hero.offsetHeight - viewportH, 1);
+
+      const progress = Math.min(Math.max(scrolledPx / totalDist, 0), 1);
+
+      // Seek to the exact frame – works seamlessly because every frame
+      // in hero.mp4 is an I-frame (re-encoded with ffmpeg -g 1).
+      video.currentTime = progress * video.duration;
+
+      // Direct DOM mutations – no React re-render, no jank
+      if (progressFillRef.current) {
+        progressFillRef.current.style.width = `${(progress * 100).toFixed(2)}%`;
+      }
+      if (scrollHintRef.current) {
+        const gone = progress > 0.03;
+        scrollHintRef.current.style.opacity = gone ? "0" : "1";
+        scrollHintRef.current.style.pointerEvents = gone ? "none" : "auto";
+      }
+    };
+
+    const requestSync = () => {
+      if (!raf) raf = requestAnimationFrame(syncVideo);
+    };
+
+    const onMetadata = () => {
+      video.pause(); // ensure no autoplay
+      setScrollHeight();
+      requestSync();
+    };
+
+    const onResize = () => {
+      setScrollHeight();
+      requestSync();
+    };
+
+    // Enforce muted/inline in JS too (belt + suspenders)
+    video.muted = true;
+    video.playsInline = true;
+
+    setScrollHeight();
+    if (video.readyState >= 1) onMetadata();
+
+    video.addEventListener("loadedmetadata", onMetadata);
+
+    const root = document.getElementById("root");
+    window.addEventListener("scroll", requestSync, { passive: true });
+    root?.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      video.removeEventListener("loadedmetadata", onMetadata);
+      window.removeEventListener("scroll", requestSync);
+      root?.removeEventListener("scroll", requestSync);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   const scrollToTop = () => {
+    document.getElementById("root")?.scrollTo({ top: 0, behavior: "smooth" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -156,60 +280,100 @@ export function HomePage() {
       </header>
 
       <main>
-        <section className={styles.hero} aria-labelledby="hero-title">
-          <img
-            className={styles.heroImage}
-            src={heroImage}
-            alt="Campo agrícola amplo iluminado pelo sol"
-          />
-          <div className={styles.heroShade} />
+        {/* ── Hero ── sticky while video plays, then page resumes ── */}
+        <section
+          className={styles.heroScroll}
+          ref={heroScrollRef}
+          aria-labelledby="hero-title"
+        >
+          <div className={styles.heroSticky}>
+            <div className={styles.hero}>
+              {/* Scroll-scrubbed background video (muted, no controls) */}
+              <video
+                ref={heroVideoRef}
+                className={styles.heroVideo}
+                src={heroVideo}
+                poster={heroImage}
+                muted
+                playsInline
+                preload="auto"
+                aria-hidden="true"
+              />
 
-          <div className={styles.heroInner}>
-            <div className={styles.heroContent}>
-              <p className={styles.eyebrow}>
-                Inteligência territorial agrícola
-              </p>
-              <h1 id="hero-title">Araterra</h1>
-              <p className={styles.heroText}>
-                Uma plataforma geoespacial para avaliar áreas rurais com mapas,
-                clima, vegetação, infraestrutura e relatórios assistidos por IA.
-              </p>
+              {/* Gradient overlay – preserved from original design */}
+              <div className={styles.heroShade} aria-hidden="true" />
 
-              <div className={styles.heroActions}>
-                <Link to="/map" className={styles.primaryButton}>
-                  Analisar uma área
-                </Link>
-                <a href="#solucoes" className={styles.secondaryButton}>
-                  Ver soluções
-                </a>
+              {/* Text + panel */}
+              <div className={styles.heroInner}>
+                <div className={styles.heroContent}>
+                  <p className={styles.eyebrow}>
+                    Inteligência territorial agrícola
+                  </p>
+                  <h1 id="hero-title">Araterra</h1>
+                  <p className={styles.heroText}>
+                    Uma plataforma geoespacial para avaliar áreas rurais com
+                    mapas, clima, vegetação, infraestrutura e relatórios
+                    assistidos por IA.
+                  </p>
+
+                  <div className={styles.heroActions}>
+                    <Link to="/map" className={styles.primaryButton}>
+                      Analisar uma área
+                    </Link>
+                    <a href="#solucoes" className={styles.secondaryButton}>
+                      Ver soluções
+                    </a>
+                  </div>
+                </div>
+
+                <aside
+                  className={styles.heroPanel}
+                  aria-label="Resumo da plataforma"
+                >
+                  <div className={styles.panelHeader}>
+                    <span>Score territorial</span>
+                    <strong>86%</strong>
+                  </div>
+                  <div className={styles.panelMap}>
+                    <span className={styles.areaOne} />
+                    <span className={styles.areaTwo} />
+                    <span className={styles.areaThree} />
+                  </div>
+                  <div className={styles.panelRows}>
+                    <span>
+                      <CloudSun aria-hidden="true" /> Chuva prevista estável
+                    </span>
+                    <span>
+                      <Route aria-hidden="true" /> Acesso logístico próximo
+                    </span>
+                    <span>
+                      <Zap aria-hidden="true" /> Energia em raio estratégico
+                    </span>
+                  </div>
+                </aside>
+              </div>
+
+              {/* Video progress bar – DOM-driven, zero React re-renders */}
+              <div
+                className={styles.videoProgressTrack}
+                aria-hidden="true"
+              >
+                <div
+                  ref={progressFillRef}
+                  className={styles.videoProgressFill}
+                />
+              </div>
+
+              {/* Scroll hint – fades out after first scroll */}
+              <div
+                ref={scrollHintRef}
+                className={styles.scrollHint}
+                aria-hidden="true"
+              >
+                <span>Scroll</span>
+                <div className={styles.scrollChevron} />
               </div>
             </div>
-
-            <aside
-              className={styles.heroPanel}
-              aria-label="Resumo da plataforma"
-            >
-              <div className={styles.panelHeader}>
-                <span>Score territorial</span>
-                <strong>86%</strong>
-              </div>
-              <div className={styles.panelMap}>
-                <span className={styles.areaOne} />
-                <span className={styles.areaTwo} />
-                <span className={styles.areaThree} />
-              </div>
-              <div className={styles.panelRows}>
-                <span>
-                  <CloudSun aria-hidden="true" /> Chuva prevista estável
-                </span>
-                <span>
-                  <Route aria-hidden="true" /> Acesso logístico próximo
-                </span>
-                <span>
-                  <Zap aria-hidden="true" /> Energia em raio estratégico
-                </span>
-              </div>
-            </aside>
           </div>
         </section>
 
@@ -326,7 +490,7 @@ export function HomePage() {
 
             <div className={styles.numbers}>
               {dataPoints.map((point) => (
-                <div className={styles.numberItem } key={point.label}>
+                <div className={styles.numberItem} key={point.label}>
                   <strong>{point.value}</strong>
                   <span className={styles.textPoints}>{point.label}</span>
                 </div>

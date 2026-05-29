@@ -3,7 +3,7 @@
   --page-gutter: clamp(24px, 5vw, 72px);
 
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
@@ -218,27 +218,53 @@
   transform: translateY(-2px);
 }
 
+.heroScroll {
+  --hero-scroll-distance: 1800px;
+
+  position: relative;
+  min-height: calc(100svh + var(--hero-scroll-distance));
+  background: #173760;
+}
+
+.heroSticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #173760;
+}
+
 .hero {
   position: relative;
-  min-height: 820px;
-  padding: 118px 0 0;
+  height: 100%;
+  min-height: 100vh;
+  padding: 0;
   overflow: hidden;
   color: #ffffff;
   background: #173760;
 }
 
-.heroImage,
+.heroVideo,
 .heroShade {
   position: absolute;
   inset: 0;
 }
 
-.heroImage {
+.heroVideo {
   z-index: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 30%;
+  background: #173760;
+}
+
+.heroVideo::-webkit-media-controls,
+.heroVideo::-webkit-media-controls-panel,
+.heroVideo::-webkit-media-controls-play-button,
+.heroVideo::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  appearance: none;
 }
 
 .heroShade {
@@ -268,9 +294,13 @@
   gap: 56px;
   align-items: center;
   width: min(100%, var(--page-max-width));
-  min-height: 500px;
+  height: 100%;
+  min-height: 0;
   margin: 0 auto;
-  padding: 60px var(--page-gutter) 320px;
+  padding:
+    clamp(110px, 14vh, 150px)
+    var(--page-gutter)
+    clamp(44px, 8vh, 84px);
 }
 
 .heroContent {
@@ -1002,6 +1032,66 @@
   stroke-width: 2.6;
 }
 
+/* ── Scroll-video progress bar ───────────────────────────────────────────── */
+
+.videoProgressTrack {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.videoProgressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #61c45d 0%, #9be36d 100%);
+  border-radius: 0 2px 2px 0;
+  /* Intentionally no CSS transition: width is driven frame-by-frame via JS */
+}
+
+/* ── Scroll hint (fades once the user starts scrolling) ─────────────────── */
+
+.scrollHint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  z-index: 4;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: scrollBounce 1.7s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.scrollChevron {
+  width: 13px;
+  height: 13px;
+  border-right: 2px solid rgba(255, 255, 255, 0.62);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.62);
+  transform: rotate(45deg);
+}
+
+@keyframes scrollBounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(9px);
+  }
+}
+
 @media (max-width: 1180px) {
   .headerInner {
     gap: 20px;
@@ -1013,9 +1103,11 @@
 
   .heroInner {
     grid-template-columns: minmax(0, 1fr);
-    min-height: auto;
-    padding-bottom: 240px;
-    padding-top: 40px;
+    gap: 32px;
+    padding:
+      clamp(100px, 13vh, 130px)
+      var(--page-gutter)
+      clamp(36px, 6vh, 64px);
   }
 
   .heroPanel {
@@ -1083,8 +1175,8 @@
   }
 
   .hero {
-    min-height: auto;
-    padding: 104px 0 0;
+    min-height: 100svh;
+    padding: 0;
   }
 
   .hero h1 {
@@ -1180,12 +1272,12 @@
 
 @media (max-width: 520px) {
   .hero {
-    padding-top: 96px;
+    padding-top: 0;
   }
 
   .heroInner {
-    padding-bottom: 160px;
-    padding-top: 28px;
+    padding-top: 92px;
+    padding-bottom: 34px;
   }
 
   .hero h1 {
