@@ -80,7 +80,8 @@
 
 .themeButton,
 .primaryLink,
-.secondaryLink {
+.secondaryLink,
+.profileButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -104,6 +105,63 @@
   padding: 0;
   border: 1px solid currentColor;
   background: transparent;
+}
+
+.profileButton {
+  width: 40px;
+  padding: 0;
+  border: 1px solid currentColor;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.profileButton:hover,
+.profileButton:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.profileMenu {
+  position: relative;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileDropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  display: grid;
+  width: 180px;
+  padding: 10px 0;
+  gap: 4px;
+  background: #162f50;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  border-radius: 16px;
+  z-index: 10;
+}
+
+.profileDropdownItem {
+  all: unset;
+  cursor: pointer;
+  width: 100%;
+  padding: 10px 16px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-align: left;
+  border-radius: 10px;
+}
+
+.profileDropdownItem:hover,
+.profileDropdownItem:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .themeButton:hover,

@@ -1,66 +1,34 @@
 package com.araterra.demo.auth.internal.services;
 
-import com.araterra.demo.auth.internal.DTOs.LoginRequestDTO;
-import com.araterra.demo.auth.internal.DTOs.LoginResponseDTO;
-import com.araterra.demo.auth.internal.DTOs.RegisterRequestDTO;
-import com.araterra.demo.auth.internal.DTOs.UpdateThemeRequestDTO;
-import com.araterra.demo.auth.internal.DTOs.UserThemeDTO;
+import com.araterra.demo.auth.internal.DTOs.*;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
-import com.araterra.demo.auth.internal.entities.enums.Roles;
 import com.araterra.demo.auth.internal.entities.User;
+import com.araterra.demo.auth.internal.entities.enums.Roles;
+import com.araterra.demo.auth.internal.mappers.TokenContext;
+import com.araterra.demo.auth.internal.mappers.UserMapper;
 import com.araterra.demo.auth.internal.repositories.UserRepository;
 import com.araterra.demo.shared.infra.exceptions.InvalidCredentialsException;
 import com.araterra.demo.shared.infra.exceptions.ResourceAlreadyExistsException;
 import com.araterra.demo.shared.infra.services.TokenService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.araterra.demo.shared.infra.storage.StorageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
-
-    public void logout(String token) {
-        if (token == null) {
-            throw new InvalidCredentialsException("Invalid token");
-        }
-
-
-        tokenService.getExpirationAsLocalDateTime(token);
-    }
-
-    public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO request) {
-        String email = tokenService.getSubjectFromRefreshToken(request.refreshToken());
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
-
-        if (!user.getStatus()) {
-            throw new InvalidCredentialsException("Invalid credentials");
-        }
-
-        String newAccessToken = tokenService.generateToken(user);
-        String newRefreshToken = tokenService.generateRefreshToken(user);
-
-        return new RefreshTokenResponseDTO(newAccessToken, newRefreshToken);
-    }
+    private final UserRepository userRepository;
+    private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
+    private final StorageService storageService;
+    private final UserMapper userMapper;
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest, String clientIp) {
 
@@ -77,66 +45,128 @@ public class AuthService {
         User user = userOpt.get();
 
         if (!user.getStatus()) {
-            throw new InvalidCredentialsException("Account is inactive");
+            throw new InvalidCredentialsException("Account inactive");
         }
 
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-        String accessToken = tokenService.generateToken(user);
-        String refreshToken = tokenService.generateRefreshToken(user);
-
-        return new LoginResponseDTO(accessToken, refreshToken, false);
+        return userMapper.toLoginDTO(user, new TokenContext(
+                tokenService.generateToken(user),
+                tokenService.generateRefreshToken(user)
+        ));
     }
 
-    public LoginResponseDTO register(RegisterRequestDTO registerRequest) {
-        String email = registerRequest.email().trim().toLowerCase();
+    public LoginResponseDTO register(RegisterRequestDTO request) {
 
-        if (userRepository.existsByEmail(email)) {
-            throw new ResourceAlreadyExistsException("Email already registered");
+        if (userRepository.existsByEmail(request.email())) {
+            throw new ResourceAlreadyExistsException("Email already in use");
         }
 
-        String[] nameParts = registerRequest.name().trim().split("\\s+", 2);
+        User user = userMapper.toEntity(request, passwordEncoder);
+        userRepository.save(user);
 
-        User user = new User();
-        user.setFirstName(nameParts[0]);
-        user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(registerRequest.password()));
-        user.setStatus(true);
-        user.setAccessibility(false);
-        user.setRole(Roles.USER);
-        user.setAcceptTerms(true);
-
-        User savedUser = userRepository.save(user);
-        String accessToken = tokenService.generateToken(savedUser);
-        String refreshToken = tokenService.generateRefreshToken(savedUser);
-
-        return new LoginResponseDTO(accessToken, refreshToken, false);
+        return userMapper.toLoginDTO(user, new TokenContext(
+                tokenService.generateToken(user),
+                tokenService.generateRefreshToken(user)
+        ));
     }
 
-    public void updateUserTheme(String email, UpdateThemeRequestDTO request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+    public RefreshTokenResponseDTO refreshToken(RefreshTokenRequestDTO request) {
 
+        String email = tokenService.getSubjectFromRefreshToken(request.refreshToken());
+        User user = findUser(email);
+
+        if (!user.getStatus()) {
+            throw new InvalidCredentialsException("Account inactive");
+        }
+
+        return userMapper.toRefreshTokenDTO(user, new TokenContext(
+                tokenService.generateToken(user),
+                tokenService.generateRefreshToken(user)
+        ));
+    }
+
+    public UserProfileDTO getProfile(String email) {
+        User user = findUser(email);
+        return userMapper.toProfileDTO(user);
+    }
+
+    public UserProfileDTO updateProfile(String email, UpdateUserProfileDTO request) {
+        User user = findUser(email);
+
+        if (request.firstName() != null) {
+            user.setFirstName(request.firstName().trim());
+        }
+
+        if (request.lastName() != null) {
+            user.setLastName(request.lastName().trim());
+        }
+
+        if (request.phone() != null) {
+
+            String phone = request.phone().trim();
+
+            if (phone.isEmpty()) {
+                user.setPhone(null);
+            } else if (!phone.equals(user.getPhone()) && userRepository.existsByPhone(phone)) {
+                throw new ResourceAlreadyExistsException("Phone already in use");
+            } else {
+                user.setPhone(phone);
+            }
+        }
+
+        userRepository.save(user);
+
+        return userMapper.toProfileDTO(user);
+    }
+
+    public UserProfileDTO uploadAvatar(String email, MultipartFile file) {
+
+        User user = findUser(email);
+
+        if (user.getAvatarPath() != null) {
+            storageService.delete(user.getAvatarPath());
+        }
+
+        String path = storageService.save(file, "avatars");
+
+        user.setAvatarPath(path);
+
+        userRepository.save(user);
+
+        return userMapper.toProfileDTO(user);
+    }
+
+    public void changePassword(String email, ChangePasswordRequestDTO request) {
+
+        User user = findUser(email);
+
+        if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+
+        userRepository.save(user);
+    }
+
+
+    public UserThemeDTO updateUserTheme(String email, UpdateThemeRequestDTO request) {
+
+        User user = findUser(email);
         user.setTheme(request.theme());
         userRepository.save(user);
+        return userMapper.toThemeDTO(user);
     }
 
     public UserThemeDTO getUserTheme(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+        User user = findUser(email);
 
-        return new UserThemeDTO(user.getTheme() != null ? user.getTheme() : "system");
+        return userMapper.toThemeDTO(user);
     }
 
-    public UserThemeDTO updateUserTheme(String email, UserThemeDTO userTheme) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
-
-        user.setTheme(userTheme.theme());
-        userRepository.save(user);
-
-        return new UserThemeDTO(user.getTheme());
+    private User findUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("User not found"));
     }
 }

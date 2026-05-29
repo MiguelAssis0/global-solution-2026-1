@@ -1,111 +1,115 @@
 package com.araterra.demo.auth.internal.controllers;
 
-
 import com.araterra.demo.auth.internal.DTOs.*;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenRequestDTO;
 import com.araterra.demo.auth.internal.DTOs.RefreshToken.RefreshTokenResponseDTO;
 import com.araterra.demo.auth.internal.services.AuthService;
+import com.araterra.demo.shared.infra.security.AuthContext;
 import com.araterra.demo.shared.infra.services.TokenService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+    private final TokenService tokenService;
+    private final AuthContext authContext;
 
-    @Autowired
-    private TokenService tokenService;
 
-    @Operation(summary = "Employee Login", description = "Authenticate employee with email and password")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
-            @ApiResponse(responseCode = "429", description = "Too many attempts - blocked"),
-            @ApiResponse(responseCode = "400", description = "Invalid input")
-    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(
             @RequestBody @Valid LoginRequestDTO loginRequest,
-            HttpServletRequest httpRequest) {
-
-        String clientIp = getClientIp(httpRequest);
-        LoginResponseDTO response = authService.login(loginRequest, clientIp);
-        return ResponseEntity.ok(response);
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(
+                authService.login(
+                        loginRequest,
+                        request.getRemoteAddr()
+                )
+        );
     }
 
-    @Operation(summary = "Register", description = "Create a new user account")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Registration successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid input or email already registered")
-    })
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> register(@RequestBody @Valid RegisterRequestDTO registerRequest) {
-        return ResponseEntity.ok(authService.register(registerRequest));
+    public ResponseEntity<LoginResponseDTO> register(
+            @RequestBody @Valid RegisterRequestDTO registerRequest
+    ) {
+        return ResponseEntity.ok(
+                authService.register(registerRequest)
+        );
     }
 
-    private String getClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isEmpty()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
-
-    @Operation(summary = "Logout", description = "Invalidate current access token")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Logout successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid token")
-    })
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        String token = tokenService.extractToken(request);
-        authService.logout(token);
-        return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "Refresh Token", description = "Generate new access token using refresh token")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Token refreshed successful"),
-            @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token")
-    })
     @PostMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody @Valid RefreshTokenRequestDTO request) {
+    public ResponseEntity<RefreshTokenResponseDTO> refresh(
+            @RequestBody @Valid RefreshTokenRequestDTO request
+    ) {
         return ResponseEntity.ok(authService.refreshToken(request));
     }
 
-    @Operation(summary = "Get User Theme", description = "Get the current user's theme preference")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Theme retrieved successfully"),
-            @ApiResponse(responseCode = "401", description = "Invalid token")
-    })
-    @GetMapping("/user-theme")
-    public ResponseEntity<UserThemeDTO> getUserTheme(HttpServletRequest request) {
-        String token = tokenService.extractToken(request);
-        String email = tokenService.getSubject(token);
-        return ResponseEntity.ok(authService.getUserTheme(email));
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileDTO> getProfile(
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(
+                authService.getProfile(
+                        authContext.getEmail(request)
+                )
+        );
     }
 
-    @Operation(summary = "Update User Theme", description = "Update the current user's theme preference (light, dark, or system)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Theme updated successfully"),
-            @ApiResponse(responseCode = "401", description = "Invalid token"),
-            @ApiResponse(responseCode = "400", description = "Invalid theme value")
-    })
+    @PatchMapping("/me")
+    public ResponseEntity<UserProfileDTO> updateProfile(
+            HttpServletRequest request,
+            @RequestBody @Valid UpdateUserProfileDTO dto
+    ) {
+        return ResponseEntity.ok(
+                authService.updateProfile(
+                        authContext.getEmail(request),
+                        dto
+                )
+        );
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<Void> changePassword(
+            HttpServletRequest request,
+            @RequestBody @Valid ChangePasswordRequestDTO dto
+    ) {
+        authService.changePassword(
+                authContext.getEmail(request),
+                dto
+        );
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user-theme")
+    public ResponseEntity<UserThemeDTO> getUserTheme(
+            HttpServletRequest request
+    ) {
+        return ResponseEntity.ok(
+                authService.getUserTheme(
+                        authContext.getEmail(request)
+                )
+        );
+    }
+
+
     @PatchMapping("/user-theme")
     public ResponseEntity<UserThemeDTO> updateUserTheme(
-            @RequestBody @Valid UserThemeDTO userTheme,
-            HttpServletRequest request) {
-        String token = tokenService.extractToken(request);
-        String email = tokenService.getSubject(token);
-        return ResponseEntity.ok(authService.updateUserTheme(email, userTheme));
+            HttpServletRequest request,
+            @RequestBody @Valid UpdateThemeRequestDTO dto
+    ) {
+        return ResponseEntity.ok(
+                authService.updateUserTheme(
+                        authContext.getEmail(request),
+                        dto
+                )
+        );
     }
 }

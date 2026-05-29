@@ -27,6 +27,16 @@ export type UserThemeResponse = {
   theme: ThemePreference;
 };
 
+export type UserProfile = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  avatarPath?: string;
+  theme?: ThemePreference;
+};
+
 export const saveToken = (token: string) => {
   localStorage.setItem(TOKEN_KEY, token);
 };
@@ -89,5 +99,46 @@ export const updateUserTheme = async (
   const response = await api.patch<UserThemeResponse>("/auth/user-theme", {
     theme,
   });
+  return response.data;
+};
+
+export const fetchProfile = async (): Promise<UserProfile> => {
+  const response = await api.get<UserProfile>("/auth/me");
+  return response.data;
+};
+
+export const updateProfile = async (
+  profile: Partial<Pick<UserProfile, "firstName" | "lastName" | "phone" | "avatarPath">>,
+): Promise<UserProfile> => {
+  const response = await api.patch<UserProfile>("/auth/me", profile);
+  return response.data;
+};
+
+export type ChangePasswordPayload = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+export const changePassword = async (
+  data: ChangePasswordPayload,
+): Promise<void> => {
+  await api.patch("/auth/me/password", data);
+};
+
+export const uploadAvatar = async (file: File) => {
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post(
+    "/auth/me/avatar",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
   return response.data;
 };

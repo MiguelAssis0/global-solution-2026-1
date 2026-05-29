@@ -1,10 +1,56 @@
-import { Link } from "react-router-dom";
-import { Leaf, MapPinned, Moon, Sun } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Leaf, MapPinned, Moon, Sun, UserCircle2 } from "lucide-react";
 import { useToggleTheme } from "../../../hooks/useToggleTheme";
+import * as authService from "../../../services/authService";
 import styles from "./Header.module.css";
 
 export function Header() {
   const { theme, toggleTheme } = useToggleTheme();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<authService.UserProfile | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (authService.isAuthenticated()) {
+      authService
+        .fetchProfile()
+        .then((profile) => mounted && setUser(profile))
+        .catch(() => setUser(null));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setUser(null);
+      navigate("/login", { replace: true });
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -34,9 +80,52 @@ export function Header() {
           <Link to="/" className={styles.secondaryLink}>
             Home
           </Link>
-          <Link to="/login" className={styles.primaryLink}>
-            Entrar
-          </Link>
+          {user ? (
+            <div className={styles.profileMenu} ref={menuRef}>
+              <button
+                type="button"
+                className={styles.profileButton}
+                onClick={() => setMenuOpen((current) => !current)}
+                aria-label="Abrir menu de usuário"
+              >
+                {user.avatarPath ? (
+                  <img
+                    src={user.avatarPath}
+                    alt={`${user.firstName} ${user.lastName}`}
+                    className={styles.avatar}
+                  />
+                ) : (
+                  <UserCircle2 size={20} />
+                )}
+              </button>
+
+              {menuOpen && (
+                <div className={styles.profileDropdown} role="menu">
+                  <button
+                    type="button"
+                    className={styles.profileDropdownItem}
+                    onClick={() => {
+                      navigate("/profile");
+                      setMenuOpen(false);
+                    }}
+                  >
+                    Meu perfil
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.profileDropdownItem}
+                    onClick={handleLogout}
+                  >
+                    Sair
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/login" className={styles.primaryLink}>
+              Entrar
+            </Link>
+          )}
         </nav>
       </div>
     </header>

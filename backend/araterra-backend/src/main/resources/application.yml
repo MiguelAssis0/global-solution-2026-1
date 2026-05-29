@@ -49,6 +49,10 @@ data:
   seeder:
     enabled: ${DATA_SEEDER_ENABLED:false}
 
+storage:
+  root-dir: ${STORAGE_ROOT:/storage}
+  avatar-max-size: 5MB
+
 api:
   security:
     skip-paths:

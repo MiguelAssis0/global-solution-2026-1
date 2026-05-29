@@ -34,6 +34,11 @@ public class ControllerExceptionHandler {
         return handleException("Resource Already Exists", HttpStatus.BAD_REQUEST, e, request);
     }
 
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<StandardError> handleStorageException(StorageException e, HttpServletRequest request) {
+        return handleException("Storage Exception", HttpStatus.BAD_REQUEST, e, request);
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<StandardError> handleBusinessException(BusinessException e, HttpServletRequest request) {
         return handleException("Business Exception", HttpStatus.BAD_REQUEST, e, request);
