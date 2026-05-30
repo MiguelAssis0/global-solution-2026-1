@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Leaf, MapPinned, Moon, Sun, UserCircle2 } from "lucide-react";
+import { Leaf, MapPinned, Moon, Sun } from "lucide-react";
 import { useToggleTheme } from "../../../hooks/useToggleTheme";
 import * as authService from "../../../services/authService";
 import styles from "./Header.module.css";
+import MenuProfile from "../../utils/MenuProfile";
 
 export function Header() {
   const { theme, toggleTheme } = useToggleTheme();
@@ -81,46 +82,7 @@ export function Header() {
             Home
           </Link>
           {user ? (
-            <div className={styles.profileMenu} ref={menuRef}>
-              <button
-                type="button"
-                className={styles.profileButton}
-                onClick={() => setMenuOpen((current) => !current)}
-                aria-label="Abrir menu de usuário"
-              >
-                {user.avatarPath ? (
-                  <img
-                    src={user.avatarPath}
-                    alt={`${user.firstName} ${user.lastName}`}
-                    className={styles.avatar}
-                  />
-                ) : (
-                  <UserCircle2 size={20} />
-                )}
-              </button>
-
-              {menuOpen && (
-                <div className={styles.profileDropdown} role="menu">
-                  <button
-                    type="button"
-                    className={styles.profileDropdownItem}
-                    onClick={() => {
-                      navigate("/profile");
-                      setMenuOpen(false);
-                    }}
-                  >
-                    Meu perfil
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.profileDropdownItem}
-                    onClick={handleLogout}
-                  >
-                    Sair
-                  </button>
-                </div>
-              )}
-            </div>
+            <MenuProfile user={user} onLogout={handleLogout} />
           ) : (
             <Link to="/login" className={styles.primaryLink}>
               Entrar

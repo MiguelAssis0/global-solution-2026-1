@@ -35,23 +35,20 @@
   left: 0;
   right: 17px;
   z-index: 1000;
-  width: auto;
-  overflow: hidden;
-  color: #ffffff;
+  width: 100vw;
   background: transparent;
   isolation: isolate;
+  
 }
 
 .header::before {
+  content: "";
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: rgba(18, 48, 82, 0.36);
   backdrop-filter: blur(10px);
-  content: "";
-  transition:
-    background var(--transition-slow),
-    backdrop-filter var(--transition-slow);
+  background: rgba(18, 48, 82, 0.36);
+
 }
 
 .headerInner {
@@ -61,11 +58,12 @@
   grid-template-columns: auto 1fr auto;
   gap: 28px;
   align-items: center;
-  width: min(100%, var(--page-max-width));
+  width: min(100vw, var(--page-max-width));
   margin: 0 auto;
   padding: 18px var(--page-gutter) 16px;
   border-bottom: 1px solid rgba(97, 196, 93, 0.72);
   transition: padding var(--transition-slow);
+  
 }
 
 .headerScrolled::before {
@@ -96,6 +94,10 @@
   height: 28px;
   color: var(--color-accent);
   stroke-width: 2.2;
+}
+
+.brand span{
+  color: white;
 }
 
 .nav {
@@ -193,14 +195,14 @@
 .headerCta,
 .primaryButton,
 .blueButton {
-  color: #ffffff;
+  color: #ffffff !important;
   background: var(--color-accent);
   box-shadow: var(--shadow-md);
 }
 
 .headerMapLink {
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  color: var(--color-header) !important;
+  border: 1px solid var(--color-header);
   background: transparent;
   box-shadow: none;
 }

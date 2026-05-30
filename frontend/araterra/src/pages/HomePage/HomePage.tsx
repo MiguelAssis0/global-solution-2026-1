@@ -1,20 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import MenuProfile from "../../components/utils/MenuProfile";
+import { useNavigate } from "react-router-dom";
+import * as authService from "../../services/authService";
 import {
   ArrowUp,
   CheckCircle2,
   CloudSun,
-  FileText,
-  Layers,
   Leaf,
   Moon,
   Route,
   Sparkles,
   Sun,
-  Target,
   Zap,
 } from "lucide-react";
 import styles from "./HomePage.module.css";
+import { solutions, riskItems, farmBenefits, dataPoints } from "./texts";
 import { useToggleTheme } from "../../hooks/useToggleTheme";
 
 const heroImage = "/images/araterra-hero-field.png";
@@ -22,89 +23,56 @@ const heroVideo = "/videos/hero.mp4";
 
 const fieldImage = "/images/araterra-field-strip.png";
 
-const solutions = [
-  {
-    title: "Mapas multicamadas",
-    description:
-      "Visualize satélite, áreas agrícolas, vias, energia e indicadores de vegetação em um só ambiente.",
-    icon: Layers,
-  },
-  {
-    title: "Leitura climática",
-    description:
-      "Cruze temperatura, umidade e chuva com o contexto de cada área desenhada no mapa.",
-    icon: CloudSun,
-  },
-  {
-    title: "Análise de aptidão",
-    description:
-      "Transforme dados espaciais em notas, alertas e recomendações para decisões de campo.",
-    icon: Target,
-  },
-  {
-    title: "Relatórios com IA",
-    description:
-      "Gere sínteses técnicas em linguagem clara para produtores, consultores e equipes de operação.",
-    icon: FileText,
-  },
-];
-
-const riskItems = [
-  "Identificação de áreas com maior risco climático e operacional.",
-  "Avaliação de vegetação por NDVI e leitura rápida de anomalias.",
-  "Consulta de infraestrutura próxima, como estradas e pontos de energia.",
-  "Resumo técnico de solo, clima e entorno para cada talhão analisado.",
-  "Priorização de visitas e investimentos com base em dados geoespaciais.",
-  "Histórico de análises para comparar áreas e acompanhar evolução.",
-];
-
-const farmBenefits = [
-  {
-    title: "Planejamento de safra",
-    description:
-      "Organize áreas prioritárias com base em clima, acesso, vegetação e infraestrutura.",
-  },
-  {
-    title: "Suporte ao consultor",
-    description:
-      "Ganhe velocidade na preparação de laudos, visitas técnicas e diagnósticos iniciais.",
-  },
-  {
-    title: "Operação mais previsível",
-    description:
-      "Antecipe gargalos de acesso, energia, água e risco climático antes de executar o plano.",
-  },
-  {
-    title: "Decisão compartilhável",
-    description:
-      "Transforme a análise espacial em uma narrativa objetiva para equipes e parceiros.",
-  },
-  {
-    title: "Monitoramento contínuo",
-    description:
-      "Use indicadores recorrentes para acompanhar mudanças no território ao longo da safra.",
-  },
-  {
-    title: "Menos achismo",
-    description:
-      "Combine evidências públicas, dados ambientais e IA para reduzir decisões no escuro.",
-  },
-];
-
-const dataPoints = [
-  { value: "1", label: "Semana para desenvolver" },
-  { value: "3", label: "Desenvolvedores " },
-  { value: "0", label: "Usuários cadastrados" },
-  { value: "0", label: "Locais atendidos" },
-  { value: "1", label: "API de clima integrado" },
-];
-
 export function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const heroScrollRef = useRef<HTMLElement | null>(null);
   const heroVideoRef = useRef<HTMLVideoElement | null>(null);
   const progressFillRef = useRef<HTMLDivElement | null>(null);
   const scrollHintRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState<authService.UserProfile | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (authService.isAuthenticated()) {
+      authService
+        .fetchProfile()
+        .then((profile) => mounted && setUser(profile))
+        .catch(() => setUser(null));
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setUser(null);
+      navigate("/login", { replace: true });
+    }
+  };
 
   const { theme, toggleTheme } = useToggleTheme();
 
@@ -139,11 +107,6 @@ export function HomePage() {
 
     let raf = 0;
 
-    /**
-     * Updates --hero-scroll-distance on the section so the sticky container
-     * has exactly enough scroll space to play the whole video.
-     * Formula: 1 second of video ≈ 520 px of scroll (feels natural).
-     */
     const setScrollHeight = () => {
       const dur =
         Number.isFinite(video.duration) && video.duration > 0
@@ -153,21 +116,9 @@ export function HomePage() {
         window.innerHeight * 2.5,
         dur > 0 ? dur * 520 : window.innerHeight * 2.5,
       );
-      hero.style.setProperty(
-        "--hero-scroll-distance",
-        `${Math.round(dist)}px`,
-      );
+      hero.style.setProperty("--hero-scroll-distance", `${Math.round(dist)}px`);
     };
 
-    /**
-     * Core scrubbing logic.
-     *
-     * getBoundingClientRect() always returns viewport-relative coordinates,
-     * regardless of whether the page scrolls via window or a #root container.
-     *
-     * When scroll = 0  →  rect.top = 0          →  progress = 0
-     * When fully past  →  rect.top = -scrollDist →  progress = 1
-     */
     const syncVideo = () => {
       raf = 0;
       if (!Number.isFinite(video.duration) || video.duration <= 0) return;
@@ -175,18 +126,14 @@ export function HomePage() {
       const rect = hero.getBoundingClientRect();
       const viewportH = window.innerHeight;
 
-      // pixels the section-top has moved above the viewport top
       const scrolledPx = -rect.top;
-      // total scrollable distance inside this section
+
       const totalDist = Math.max(hero.offsetHeight - viewportH, 1);
 
       const progress = Math.min(Math.max(scrolledPx / totalDist, 0), 1);
 
-      // Seek to the exact frame – works seamlessly because every frame
-      // in hero.mp4 is an I-frame (re-encoded with ffmpeg -g 1).
       video.currentTime = progress * video.duration;
 
-      // Direct DOM mutations – no React re-render, no jank
       if (progressFillRef.current) {
         progressFillRef.current.style.width = `${(progress * 100).toFixed(2)}%`;
       }
@@ -212,7 +159,6 @@ export function HomePage() {
       requestSync();
     };
 
-    // Enforce muted/inline in JS too (belt + suspenders)
     video.muted = true;
     video.playsInline = true;
 
@@ -272,15 +218,18 @@ export function HomePage() {
             <Link to="/map" className={styles.headerMapLink}>
               Abrir mapa
             </Link>
-            <Link to="/login" className={styles.headerCta}>
-              Entrar
-            </Link>
+            {user ? (
+              <MenuProfile user={user} onLogout={handleLogout} />
+            ) : (
+              <Link to="/login" className={styles.primaryButton}>
+                Entrar
+              </Link>
+            )}
           </div>
         </div>
       </header>
 
       <main>
-        {/* ── Hero ── sticky while video plays, then page resumes ── */}
         <section
           className={styles.heroScroll}
           ref={heroScrollRef}
@@ -288,7 +237,6 @@ export function HomePage() {
         >
           <div className={styles.heroSticky}>
             <div className={styles.hero}>
-              {/* Scroll-scrubbed background video (muted, no controls) */}
               <video
                 ref={heroVideoRef}
                 className={styles.heroVideo}
@@ -300,10 +248,8 @@ export function HomePage() {
                 aria-hidden="true"
               />
 
-              {/* Gradient overlay – preserved from original design */}
               <div className={styles.heroShade} aria-hidden="true" />
 
-              {/* Text + panel */}
               <div className={styles.heroInner}>
                 <div className={styles.heroContent}>
                   <p className={styles.eyebrow}>
@@ -353,18 +299,13 @@ export function HomePage() {
                 </aside>
               </div>
 
-              {/* Video progress bar – DOM-driven, zero React re-renders */}
-              <div
-                className={styles.videoProgressTrack}
-                aria-hidden="true"
-              >
+              <div className={styles.videoProgressTrack} aria-hidden="true">
                 <div
                   ref={progressFillRef}
                   className={styles.videoProgressFill}
                 />
               </div>
 
-              {/* Scroll hint – fades out after first scroll */}
               <div
                 ref={scrollHintRef}
                 className={styles.scrollHint}
