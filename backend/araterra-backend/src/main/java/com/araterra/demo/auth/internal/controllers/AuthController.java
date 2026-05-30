@@ -52,6 +52,20 @@ public class AuthController {
         return ResponseEntity.ok(authService.refreshToken(request));
     }
 
+    @PostMapping("/forgot-password")
+    public ResponseEntity<AuthMessageResponseDTO> forgotPassword(
+            @RequestBody @Valid ForgotPasswordRequestDTO request
+    ) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthMessageResponseDTO> resetPassword(
+            @RequestBody @Valid ResetPasswordRequestDTO request
+    ) {
+        return ResponseEntity.ok(authService.resetPassword(request));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getProfile(
             HttpServletRequest request

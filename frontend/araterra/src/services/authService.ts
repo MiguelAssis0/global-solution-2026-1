@@ -21,6 +21,19 @@ export type AuthResponse = {
   requiresTwoFactor?: boolean;
 };
 
+export type AuthMessageResponse = {
+  message: string;
+};
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  newPassword: string;
+};
+
 export type ThemePreference = "light" | "dark" | "system";
 
 export type UserThemeResponse = {
@@ -85,6 +98,20 @@ export const register = async (data: RegisterPayload) => {
     saveRefreshToken(response.data.refreshToken);
   }
 
+  return response.data;
+};
+
+export const requestPasswordReset = async (
+  data: ForgotPasswordPayload,
+): Promise<AuthMessageResponse> => {
+  const response = await api.post<AuthMessageResponse>("/auth/forgot-password", data);
+  return response.data;
+};
+
+export const resetPassword = async (
+  data: ResetPasswordPayload,
+): Promise<AuthMessageResponse> => {
+  const response = await api.post<AuthMessageResponse>("/auth/reset-password", data);
   return response.data;
 };
 

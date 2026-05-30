@@ -343,6 +343,29 @@
   font-weight: 800;
 }
 
+.success {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(56, 163, 69, 0.2);
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.forgotLink {
+  justify-self: end;
+  color: var(--color-accent);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.forgotLink:hover {
+  color: var(--color-accent-2);
+}
+
 .submitButton {
   min-height: 50px;
   border: 0;

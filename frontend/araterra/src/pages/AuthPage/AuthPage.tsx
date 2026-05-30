@@ -260,6 +260,12 @@ export function AuthPage() {
               </label>
             )}
 
+            {!isRegister && (
+              <Link to="/forgot-password" className={styles.forgotLink}>
+                Esqueci minha senha
+              </Link>
+            )}
+
             {error && <p className={styles.error}>{error}</p>}
 
             <button className={styles.submitButton} type="submit" disabled={isLoading}>
