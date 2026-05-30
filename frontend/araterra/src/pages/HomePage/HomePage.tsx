@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import MenuProfile from "../../components/utils/MenuProfile";
 import { useNavigate } from "react-router-dom";
 import * as authService from "../../services/authService";
 import {
@@ -8,12 +7,11 @@ import {
   CheckCircle2,
   CloudSun,
   Leaf,
-  Moon,
   Route,
   Sparkles,
-  Sun,
   Zap,
 } from "lucide-react";
+import { PublicHeader } from "../../components/layout/PublicHeader/PublicHeader";
 import styles from "./HomePage.module.css";
 import { solutions, riskItems, farmBenefits, dataPoints } from "./texts";
 import { useToggleTheme } from "../../hooks/useToggleTheme";
@@ -23,6 +21,13 @@ const heroVideo = "/videos/hero.mp4";
 
 const fieldImage = "/images/araterra-field-strip.png";
 
+const homeNavItems = [
+  { label: "Soluções", href: "#solucoes" },
+  { label: "Plataforma", href: "#plataforma" },
+  { label: "Benefícios", href: "#beneficios" },
+  { label: "Dados", href: "#dados" },
+];
+
 export function HomePage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const heroScrollRef = useRef<HTMLElement | null>(null);
@@ -31,8 +36,6 @@ export function HomePage() {
   const scrollHintRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const [user, setUser] = useState<authService.UserProfile | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -48,22 +51,6 @@ export function HomePage() {
       mounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-
-    if (menuOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [menuOpen]);
 
   const handleLogout = async () => {
     try {
@@ -188,46 +175,16 @@ export function HomePage() {
 
   return (
     <div className={styles.page}>
-      <header
-        className={`${styles.header} ${isScrolled ? styles.headerScrolled : ""}`}
-      >
-        <div className={styles.headerInner}>
-          <Link to="/" className={styles.brand} aria-label="Araterra">
-            <Leaf aria-hidden="true" />
-            <span>Araterra</span>
-          </Link>
-
-          <nav className={styles.nav} aria-label="Navegação principal">
-            <a href="#solucoes">Soluções</a>
-            <a href="#plataforma">Plataforma</a>
-            <a href="#beneficios">Benefícios</a>
-            <a href="#dados">Dados</a>
-          </nav>
-
-          <div className={styles.headerActions}>
-            <button
-              type="button"
-              className={styles.themeButton}
-              onClick={toggleTheme}
-              aria-label={
-                theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"
-              }
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-            <Link to="/map" className={styles.headerMapLink}>
-              Abrir mapa
-            </Link>
-            {user ? (
-              <MenuProfile user={user} onLogout={handleLogout} />
-            ) : (
-              <Link to="/login" className={styles.primaryButton}>
-                Entrar
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
+      <PublicHeader
+        variant="transparent"
+        scrolled={isScrolled}
+        navItems={homeNavItems}
+        showThemeToggle
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        user={user}
+        onLogout={handleLogout}
+      />
 
       <main>
         <section
@@ -271,32 +228,6 @@ export function HomePage() {
                     </a>
                   </div>
                 </div>
-
-                <aside
-                  className={styles.heroPanel}
-                  aria-label="Resumo da plataforma"
-                >
-                  <div className={styles.panelHeader}>
-                    <span>Score territorial</span>
-                    <strong>86%</strong>
-                  </div>
-                  <div className={styles.panelMap}>
-                    <span className={styles.areaOne} />
-                    <span className={styles.areaTwo} />
-                    <span className={styles.areaThree} />
-                  </div>
-                  <div className={styles.panelRows}>
-                    <span>
-                      <CloudSun aria-hidden="true" /> Chuva prevista estável
-                    </span>
-                    <span>
-                      <Route aria-hidden="true" /> Acesso logístico próximo
-                    </span>
-                    <span>
-                      <Zap aria-hidden="true" /> Energia em raio estratégico
-                    </span>
-                  </div>
-                </aside>
               </div>
 
               <div className={styles.videoProgressTrack} aria-hidden="true">
@@ -363,15 +294,31 @@ export function HomePage() {
         <section className={styles.platformSection} id="plataforma">
           <div className={styles.sectionInner}>
             <div className={styles.platformVisual}>
-              <div className={styles.deviceMock}>
-                <div className={styles.deviceTop} />
-                <div className={styles.deviceMap}>
-                  <span className={styles.pinOne} />
-                  <span className={styles.pinTwo} />
-                  <span className={styles.pinThree} />
-                  <span className={styles.pinFour} />
+              <aside
+                className={`${styles.heroPanel} ${styles.platformPanel}`}
+                aria-label="Resumo da plataforma"
+              >
+                <div className={styles.panelHeader}>
+                  <span>Score territorial</span>
+                  <strong>86%</strong>
                 </div>
-              </div>
+                <div className={styles.panelMap}>
+                  <span className={styles.areaOne} />
+                  <span className={styles.areaTwo} />
+                  <span className={styles.areaThree} />
+                </div>
+                <div className={styles.panelRows}>
+                  <span>
+                    <CloudSun aria-hidden="true" /> Chuva prevista estável
+                  </span>
+                  <span>
+                    <Route aria-hidden="true" /> Acesso logístico próximo
+                  </span>
+                  <span>
+                    <Zap aria-hidden="true" /> Energia em raio estratégico
+                  </span>
+                </div>
+              </aside>
 
               <div className={styles.platformCopy}>
                 <p className={styles.sectionKicker}>Manejo e monitoramento</p>
@@ -480,6 +427,9 @@ export function HomePage() {
             <div>
               <a href="#solucoes">Soluções</a>
               <a href="#plataforma">Plataforma</a>
+              <Link to="/privacidade">Privacidade</Link>
+              <Link to="/termos">Termos</Link>
+              <Link to="/suporte">Suporte</Link>
               <Link to="/login">Área do cliente</Link>
             </div>
           </div>

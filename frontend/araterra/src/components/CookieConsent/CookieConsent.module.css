@@ -1,0 +1,118 @@
+.banner {
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 1200;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  width: min(390px, calc(100vw - 32px));
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #ffffff;
+  background: rgba(7, 26, 45, 0.96);
+  box-shadow: 0 22px 58px rgba(5, 18, 32, 0.34);
+  backdrop-filter: blur(16px);
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  color: #9be36d;
+  background: rgba(97, 196, 93, 0.14);
+}
+
+.iconWrap svg {
+  width: 23px;
+  height: 23px;
+}
+
+.content {
+  min-width: 0;
+}
+
+.content h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1.25;
+}
+
+.content p {
+  margin: 9px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.privacyLink {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  color: #9be36d;
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.privacyLink svg {
+  width: 16px;
+  height: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.actions button {
+  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 8px;
+  padding: 0 13px;
+  color: #ffffff;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 850;
+  transition:
+    transform var(--transition-normal),
+    background var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+.actions button:hover {
+  transform: translateY(-1px);
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.actions .primaryButton {
+  border-color: #3da446;
+  background: #3da446;
+}
+
+.actions .primaryButton:hover {
+  border-color: #61c45d;
+  background: #32963b;
+}
+
+@media (max-width: 560px) {
+  .banner {
+    left: 16px;
+    bottom: 16px;
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    display: grid;
+  }
+}

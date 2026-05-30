@@ -1,0 +1,345 @@
+.header {
+  --public-header-max-width: 1280px;
+  --public-header-gutter: clamp(24px, 5vw, 72px);
+
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  color: #ffffff;
+  isolation: isolate;
+}
+
+.transparent {
+  position: fixed;
+  top: 0;
+  background: transparent;
+}
+
+.solid {
+  position: sticky;
+  top: 0;
+  background: #071a2d;
+  box-shadow: 0 10px 30px rgba(5, 18, 32, 0.18);
+}
+
+.transparent::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(18, 48, 82, 0.34);
+  backdrop-filter: blur(10px);
+  content: "";
+  transition:
+    background var(--transition-slow),
+    backdrop-filter var(--transition-slow);
+}
+
+.transparent.scrolled::before,
+.transparent.menuOpen::before {
+  background: rgba(18, 50, 86, 0.97);
+  backdrop-filter: blur(16px);
+}
+
+.inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: center;
+  width: min(100%, var(--public-header-max-width));
+  min-height: 72px;
+  margin: 0 auto;
+  padding: 0 var(--public-header-gutter);
+  border-bottom: 1px solid rgba(97, 196, 93, 0.72);
+  transition:
+    min-height var(--transition-slow),
+    border-color var(--transition-slow);
+}
+
+.solid .inner {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.scrolled .inner {
+  min-height: 62px;
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+}
+
+.brand {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  color: #ffffff;
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.brand svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  color: #61c45d;
+  stroke-width: 2.2;
+}
+
+.brand span {
+  color: #ffffff;
+}
+
+.nav {
+  display: inline-flex;
+  justify-content: center;
+  gap: 28px;
+  align-items: center;
+  min-width: 0;
+}
+
+.nav a {
+  position: relative;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color var(--transition-normal);
+}
+
+.nav a::after {
+  position: absolute;
+  right: 0;
+  bottom: -10px;
+  left: 0;
+  height: 2px;
+  background: #61c45d;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--transition-normal);
+}
+
+.nav a:hover {
+  color: #ffffff;
+}
+
+.nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.actions {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.themeButton,
+.outlineButton,
+.primaryButton,
+.menuButton,
+.mobileGhostButton,
+.mobileGhostLink,
+.mobilePrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    transform var(--transition-normal),
+    background var(--transition-normal),
+    border-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+.themeButton {
+  width: 46px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  color: #071a2d;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.outlineButton {
+  padding: 0 17px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.primaryButton {
+  padding: 0 18px;
+  color: #ffffff;
+  background: #2f64b8;
+  box-shadow: 0 12px 26px rgba(47, 100, 184, 0.26);
+}
+
+.themeButton:hover,
+.outlineButton:hover,
+.primaryButton:hover,
+.menuButton:hover,
+.mobileGhostButton:hover,
+.mobileGhostLink:hover,
+.mobilePrimary:hover {
+  transform: translateY(-1px);
+}
+
+.outlineButton:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.primaryButton:hover,
+.mobilePrimary:hover {
+  background: #285aa7;
+}
+
+.menuButton {
+  display: none;
+  width: 44px;
+  min-width: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.menuButton svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mobilePanel {
+  display: none;
+}
+
+@media (max-width: 1040px) {
+  .inner {
+    gap: 20px;
+  }
+
+  .nav {
+    gap: 20px;
+  }
+
+  .actions {
+    gap: 10px;
+  }
+
+  .outlineButton,
+  .primaryButton {
+    padding: 0 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+    min-height: 68px;
+    border-bottom-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .transparent::before {
+    background: rgba(18, 50, 86, 0.96);
+    backdrop-filter: blur(16px);
+  }
+
+  .nav,
+  .actions {
+    display: none;
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+
+  .brand {
+    font-size: 1.35rem;
+  }
+
+  .brand svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .mobilePanel {
+    display: grid;
+    gap: 18px;
+    width: min(100%, var(--public-header-max-width));
+    margin: 0 auto;
+    padding: 18px var(--public-header-gutter) 22px;
+  }
+
+  .mobileNav,
+  .mobileActions {
+    display: grid;
+    gap: 10px;
+  }
+
+  .mobileGhostLink,
+  .mobileGhostButton,
+  .mobilePrimary {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .mobileNav a {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    min-height: 32px;
+    padding: 4px 0;
+    border: 0;
+    color: #ffffff;
+    background: transparent;
+    justify-content: flex-start;
+    font-size: 0.86rem;
+    font-weight: 850;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mobileNav a:hover {
+    color: #9be36d;
+    transform: none;
+  }
+
+  .mobileGhostButton {
+    cursor: pointer;
+  }
+
+  .mobilePrimary {
+    border-color: #2f64b8;
+    background: #2f64b8;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    --public-header-gutter: 20px;
+  }
+
+  .brand {
+    font-size: 1.28rem;
+  }
+
+  .mobilePanel {
+    width: 100%;
+  }
+}

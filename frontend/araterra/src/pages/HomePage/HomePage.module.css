@@ -291,9 +291,7 @@
 .heroInner {
   position: relative;
   z-index: 3;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 390px);
-  gap: 56px;
+  display: flex;
   align-items: center;
   width: min(100%, var(--page-max-width));
   height: 100%;
@@ -307,7 +305,7 @@
 
 .heroContent {
   position: relative;
-  max-width: 650px;
+  max-width: 720px;
   min-width: 0;
 }
 
@@ -329,7 +327,7 @@
 }
 
 .heroText {
-  max-width: 620px;
+  max-width: 650px;
   margin: 22px 0 0;
   color: #edf5ff;
   font-size: 1.08rem;
@@ -667,9 +665,24 @@
 
 .platformVisual {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
   gap: 64px;
   align-items: center;
+}
+
+.platformPanel {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  border-color: rgba(47, 100, 184, 0.18);
+  background:
+    linear-gradient(180deg, rgba(23, 55, 96, 0.98) 0%, rgba(31, 76, 130, 0.96) 100%);
+  box-shadow: 0 24px 56px rgba(23, 55, 96, 0.22);
+  backdrop-filter: none;
+}
+
+.platformPanel .panelMap {
+  height: 190px;
 }
 
 .deviceMock {
