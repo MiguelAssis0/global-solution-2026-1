@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
 
     volumes:
-      - ./storage:/storage
+       - ${HOME}/araterra-storage:/storage
 
     container_name: geospatial-backend
 
@@ -70,4 +70,6 @@ services:
       VITE_API_BASE_URL: "http://backend:8080/api"
 
 volumes:
+
   postgres_data:
+

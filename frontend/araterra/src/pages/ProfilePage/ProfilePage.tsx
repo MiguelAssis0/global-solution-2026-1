@@ -50,6 +50,21 @@ export function ProfilePage() {
   const [avatarPreview, setAvatarPreview] =
     useState<string>("");
 
+  const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
+
+  const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, "");
+
+  const resolveAvatarUrl = (avatarPath?: string | null) => {
+    if (!avatarPath) return "";
+
+    if (avatarPath.startsWith("http")) {
+      return avatarPath;
+    }
+
+    return `${API_ORIGIN}${avatarPath.startsWith("/") ? "" : "/"}${avatarPath}`;
+  };
+
   useEffect(() => {
     let mounted = true;
 
@@ -57,16 +72,13 @@ export function ProfilePage() {
       .fetchProfile()
       .then((user) => {
         if (!mounted) return;
-
         setProfile(user);
-
         setProfileForm({
           name:
             `${user.firstName} ${user.lastName}`.trim(),
           phone: user.phone ?? "",
         });
-
-        setAvatarPreview(user.avatarPath ?? "");
+        setAvatarPreview(resolveAvatarUrl(user.avatarPath));
       })
       .catch(() => {
         if (!mounted) return;
