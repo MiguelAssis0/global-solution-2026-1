@@ -18,15 +18,12 @@ export function useAiInsight() {
       return;
     }
 
-    const lat = current.type === "point" ? current.lat : current.centroidLat;
-    const lng = current.type === "point" ? current.lng : current.centroidLng;
-
     setInsight(null);
     setAnalysisData(null);
     setLoading(true);
     setError(null);
     try {
-      const response = await requestInsight(lat, lng);
+      const response = await requestInsight(current);
       setInsight(response.insight);
       setAnalysisData(response.analysis);
     } catch (err) {
