@@ -25,9 +25,9 @@ export const solutions = [
     icon: Target,
   },
   {
-    title: "Relatórios com IA",
+    title: "Assistência com IA",
     description:
-      "Gere sínteses técnicas em linguagem clara para produtores, consultores e equipes de operação.",
+      "Entre em contato com nossa IA para receber orientações e soluções personalizadas.",
     icon: FileText,
   },
 ];
@@ -43,7 +43,7 @@ export const riskItems = [
 
 export const farmBenefits = [
   {
-    title: "Planejamento de safra",
+    title: "Planejamento",
     description:
       "Organize áreas prioritárias com base em clima, acesso, vegetação e infraestrutura.",
   },
@@ -65,7 +65,7 @@ export const farmBenefits = [
   {
     title: "Monitoramento contínuo",
     description:
-      "Use indicadores recorrentes para acompanhar mudanças no território ao longo da safra.",
+      "Use indicadores recorrentes para acompanhar mudanças no território ao longo do tempo.",
   },
   {
     title: "Menos achismo",
@@ -75,9 +75,9 @@ export const farmBenefits = [
 ];
 
 export const dataPoints = [
-  { value: "1", label: "Semana para desenvolver" },
-  { value: "3", label: "Desenvolvedores " },
-  { value: "0", label: "Usuários cadastrados" },
-  { value: "0", label: "Locais atendidos" },
-  { value: "1", label: "API de clima integrado" },
+  { value: "100%", label: "De cobertura global" },
+  { value: "IA", label: "Assistente de soluções" },
+  { value: "3", label: "DEVS trabalhando" },
+  { value: "GS", label: "Projeto Global Solution" },
+  { value: "FIAP", label: "Feito por alunos da FIAP" },
 ];

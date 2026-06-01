@@ -583,7 +583,7 @@
   width: 40px;
   height: 40px;
   margin-bottom: 18px;
-  color: var(--color-accent-2);
+  color: var(--color-accent);
   stroke-width: 1.8;
 }
 
@@ -848,7 +848,7 @@
 .worldMap {
   position: absolute;
   inset: 0;
-  background-image: url("../../../public/images/mapa_mundi.jpg");
+  background-image: url("../../../images/mapa_mundi.jpg");
   background-size: cover;
   background-position: center;
   background-clip: border-box;

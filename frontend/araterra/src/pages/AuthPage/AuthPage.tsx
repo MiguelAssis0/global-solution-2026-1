@@ -48,8 +48,8 @@ export function AuthPage() {
   const helperText = useMemo(
     () =>
       isRegister
-        ? "Comece a avaliar áreas rurais com mapa, clima, vegetação e infraestrutura em um só ambiente."
-        : "Entre para continuar suas análises territoriais e seus relatórios assistidos por IA.",
+        ? "Comece a avaliar áreas, mapa, clima, vegetação e infraestrutura em um só ambiente."
+        : "Entre para continuar suas análises territoriais.",
     [isRegister],
   );
 
@@ -133,10 +133,10 @@ export function AuthPage() {
             <span>Araterra</span>
           </Link>
 
-          <p className={styles.kicker}>Inteligência territorial agrícola</p>
+          <p className={styles.kicker}>Inteligência territorial</p>
           <h1>Decisões de campo com leitura clara do território.</h1>
           <p>
-            Avalie áreas rurais com camadas geoespaciais, dados climáticos,
+            Avalie áreas com camadas geoespaciais, dados climáticos,
             infraestrutura próxima e sínteses técnicas em linguagem objetiva.
           </p>
 

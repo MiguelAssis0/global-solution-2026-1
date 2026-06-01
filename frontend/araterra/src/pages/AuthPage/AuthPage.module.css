@@ -1,31 +1,49 @@
 .page {
+  position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(390px, 0.9fr);
   min-height: 100vh;
-  background: var(--color-bg);
+  overflow-x: clip;
+  background: #173760;
   color: var(--color-text);
   font-family: var(--font-sans);
 }
 
+.page::before,
+.page::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.page::before {
+  z-index: -2;
+  background: url("/images/araterra-hero-field.png") center / cover;
+}
+
+.page::after {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(7, 26, 45, 0.94) 0%, rgba(15, 39, 70, 0.8) 46%, rgba(15, 39, 70, 0.38) 100%),
+    linear-gradient(180deg, rgba(23, 55, 96, 0.98) 0%, rgba(23, 55, 96, 0.46) 56%, rgba(7, 26, 45, 0.72) 100%);
+}
+
 .brandPanel {
   position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   min-height: 100vh;
   overflow: hidden;
   padding: clamp(36px, 5vw, 68px);
   color: #ffffff;
-  background:
-    linear-gradient(180deg, rgba(23, 55, 96, 1) 0%, rgba(23, 55, 96, 0.84) 34%, rgba(23, 55, 96, 0.34) 72%),
-    url("/images/araterra-hero-field.png") center / cover;
+  background: transparent;
 }
 
 .brandShade {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(15, 39, 70, 0.94), rgba(15, 39, 70, 0.72) 52%, rgba(15, 39, 70, 0.3)),
-    linear-gradient(180deg, rgba(23, 55, 96, 0.98), rgba(23, 55, 96, 0.14) 64%);
+  display: none;
 }
 
 .brandContent {
@@ -188,6 +206,8 @@
 }
 
 .formPanel {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,10 +217,11 @@
 .card {
   width: min(440px, 100%);
   padding: 30px;
-  border: 1px solid rgba(23, 55, 96, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 8px;
-  background: var(--color-surface-2);
-  box-shadow: 0 24px 70px rgba(31, 57, 90, 0.13);
+  background: rgba(246, 248, 252, 0.94);
+  box-shadow: 0 24px 70px rgba(8, 24, 42, 0.28);
+  backdrop-filter: blur(18px);
 }
 
 .mobileBrand {
@@ -224,7 +245,7 @@
   gap: 4px;
   padding: 4px;
   border-radius: 8px;
-  background: var(--color-surface-2);
+  background: rgba(23, 55, 96, 0.08);
 }
 
 .toggle button {
@@ -232,7 +253,7 @@
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: var(--color-text-2);
+  color: #3e4f66;
   font-weight: 800;
   transition:
     background var(--transition-normal),
@@ -240,9 +261,21 @@
     box-shadow var(--transition-normal);
 }
 
+.toggle button:hover {
+  color: #071a2d;
+  background: rgba(23, 55, 96, 0.08);
+}
+
 .toggle .activeToggle {
-  color: var(--color-surface);
+  color: #ffffff;
   background: var(--color-accent);
+  box-shadow: 0 8px 20px rgba(47, 100, 184, 0.22);
+}
+
+.toggle .activeToggle:hover,
+.toggle .activeToggle:focus-visible {
+  color: #ffffff;
+  background: #2f8f3a;
   box-shadow: 0 8px 20px rgba(47, 100, 184, 0.22);
 }
 
@@ -261,7 +294,7 @@
 
 .heading h2 {
   margin: 0;
-  color: var(--color-text);
+  color: #071a2d;
   font-size: 1.9rem;
   font-weight: 800;
   line-height: 1.15;
@@ -270,7 +303,7 @@
 .heading span {
   display: block;
   margin-top: 10px;
-  color: var(--color-text-2);
+  color: #40536d;
   font-size: 0.94rem;
   line-height: 1.55;
 }
@@ -286,7 +319,7 @@
 }
 
 .field span {
-  color: var(--color-text);
+  color: #071a2d;
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -297,10 +330,10 @@
   align-items: center;
   min-height: 48px;
   padding: 0 14px;
-  border: 1px solid var(--color-border);
+  border: 1px solid #c9d5e5;
   border-radius: 8px;
-  background: var(--color-surface-2);
-  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.78);
+  color: #132033;
   transition:
     border-color var(--transition-normal),
     background var(--transition-normal),
@@ -309,7 +342,7 @@
 
 .inputWrap:focus-within {
   border-color: var(--color-accent);
-  background: var(--color-surface);
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(61, 164, 70, 0.12);
 }
 
@@ -324,12 +357,12 @@
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--color-text);
+  color: #132033;
   font-size: 0.95rem;
 }
 
 .inputWrap input::placeholder {
-  color: var(--color-text-3);
+  color: #66778d;
 }
 
 .error {
@@ -371,7 +404,7 @@
   border: 0;
   border-radius: 8px;
   background: var(--color-accent);
-  color: var(--color-surface);
+  color: #ffffff;
   font-weight: 800;
   box-shadow: var(--shadow-md);
   transition:
@@ -381,7 +414,7 @@
 }
 
 .submitButton:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #2f8f3a;
   transform: translateY(-1px);
 }
 
@@ -417,7 +450,7 @@
   .formPanel {
     min-height: 100vh;
     padding: 24px;
-    background: var(--color-bg);
+    background: transparent;
   }
 
   .mobileBrand {

@@ -210,13 +210,12 @@ export function HomePage() {
               <div className={styles.heroInner}>
                 <div className={styles.heroContent}>
                   <p className={styles.eyebrow}>
-                    Inteligência territorial agrícola
+                    Inteligência territorial
                   </p>
                   <h1 id="hero-title">Araterra</h1>
                   <p className={styles.heroText}>
-                    Uma plataforma geoespacial para avaliar áreas rurais com
-                    mapas, clima, vegetação, infraestrutura e relatórios
-                    assistidos por IA.
+                    Uma plataforma geoespacial para avaliar áreas com
+                    mapas, clima, vegetação, infraestrutura e assistência por IA.
                   </p>
 
                   <div className={styles.heroActions}>
@@ -253,7 +252,7 @@ export function HomePage() {
           <div className={styles.sectionInner}>
             <div className={styles.centerHeader}>
               <p className={styles.sectionKicker}>Nossas soluções</p>
-              <h2>Diagnóstico rural em uma visão integrada.</h2>
+              <h2>Diagnóstico em uma visão integrada</h2>
               <p>
                 A Araterra organiza dados dispersos em uma leitura simples para
                 investigar aptidão produtiva, risco ambiental, acesso e contexto
@@ -276,8 +275,7 @@ export function HomePage() {
         <section className={styles.riskBand} id="beneficios">
           <div className={styles.sectionInner}>
             <div className={styles.riskTitle}>
-              <p className={styles.sectionKicker}>Gestão de riscos</p>
-              <h2>Benefícios para quem decide no campo.</h2>
+              <h2>Benefícios para quem decide com a Araterra</h2>
             </div>
 
             <div className={styles.riskGrid}>
@@ -321,8 +319,8 @@ export function HomePage() {
               </aside>
 
               <div className={styles.platformCopy}>
-                <p className={styles.sectionKicker}>Manejo e monitoramento</p>
-                <h2>Do mapa ao relatório, sem perder o contexto da fazenda.</h2>
+                <p className={styles.sectionKicker}>Facilidade no uso</p>
+                <h2>Do mapa ao relatório</h2>
                 <p>
                   A plataforma conecta o desenho da área com dados ambientais e
                   infraestrutura do entorno. O resultado é uma leitura rápida
@@ -341,7 +339,7 @@ export function HomePage() {
 
         <section className={styles.farmSection}>
           <div className={styles.sectionInner}>
-            <h2>Leve para sua fazenda</h2>
+            <h2>Leve para seu negócio</h2>
 
             <div className={styles.farmGrid}>
               {farmBenefits.map((benefit) => (
@@ -362,10 +360,10 @@ export function HomePage() {
             <div className={styles.dataLayout}>
               <div className={styles.presenceCopy}>
                 <p className={styles.sectionKicker}>Presença nos dados</p>
-                <h2>Uma base visual para enxergar o território.</h2>
+                <h2>Uma base visual para enxergar o território</h2>
                 <p>
                   Em vez de prometer números inflados, a Araterra concentra
-                  fontes úteis para análise rural: imagens de satélite,
+                  fontes úteis para análise do território: imagens de satélite,
                   indicadores de vegetação, clima, vias, energia e registros de
                   áreas agrícolas.
                 </p>
