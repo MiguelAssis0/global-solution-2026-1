@@ -399,7 +399,7 @@ export function HomePage() {
             <h2>Comece pela área que mais importa agora.</h2>
             <p>
               Abra o mapa, delimite uma região e veja como a análise territorial
-              pode acelerar decisões agrícolas com mais clareza.
+              pode acelerar decisões com mais clareza.
             </p>
             <Link to="/map" className={styles.primaryButton}>
               Abrir o mapa
