@@ -215,7 +215,7 @@ export function HomePage() {
                   <h1 id="hero-title">Araterra</h1>
                   <p className={styles.heroText}>
                     Uma plataforma geoespacial para avaliar áreas com
-                    mapas, clima, vegetação, infraestrutura e assistência por IA.
+                    mapas, clima, vegetação, infraestrutura e com assistência por IA.
                   </p>
 
                   <div className={styles.heroActions}>
@@ -415,7 +415,7 @@ export function HomePage() {
             <span>Araterra</span>
           </div>
           <div className={styles.footerContacts}>
-            <span>Inteligência territorial para o agro</span>
+            <span>Inteligência territorial</span>
           </div>
           <div className={styles.footerBottom}>
             <span>
