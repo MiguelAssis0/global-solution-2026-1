@@ -5,6 +5,8 @@ export interface ScoreBreakdown {
   roadsScore?: number;
   ndviScore?: number;
   energyScore?: number;
+  biomeScore?: number;
+  locationScore?: number;
   finalScore: number;
   classification?: AptidaoClass;
   classificationLabel: string;
@@ -123,6 +125,18 @@ export interface QueryPointResponse {
   distanceToInfrastructureKm?: number;
   areaType?: string;
   vegetationIndex?: number;
+}
+
+export interface ScoreResponse {
+  distanceToRoadKm?: number;
+  distanceToInfrastructureKm?: number;
+  vegetationScore?: number;
+  logisticConnectivityScore?: number;
+  energyInfrastructureScore?: number;
+  finalScore: number;
+  suitabilityLevel: SuitabilityLevel;
+  biomeScore?: number;
+  locationScore?: number;
 }
 
 export interface RegionSummaryResponse {

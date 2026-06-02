@@ -9,6 +9,8 @@ public record ScoreResponseDTO(
         Double logisticConnectivityScore,
         Double energyInfrastructureScore,
         Double finalScore,
-        SuitabilityLevel suitabilityLevel
+        SuitabilityLevel suitabilityLevel,
+        Double biomeScore,
+        Double locationScore
 ) {
 }

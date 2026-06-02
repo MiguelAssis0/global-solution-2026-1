@@ -24,8 +24,13 @@ public class AnalysisController {
     }
 
     @PostMapping("/analysis/calculate")
-    public ScoreResponseDTO calculateScore(@Valid @RequestBody CoordinateRequestDTO request) {
-        return analysisService.calculateScore(request.latitude(), request.longitude());
+    public ScoreResponseDTO calculateScore(@Valid @RequestBody ScoreRequestDTO request) {
+        return analysisService.calculateScore(request.latitude(), request.longitude(), request.aiAnalysis());
+    }
+
+    @PostMapping("/analysis/score")
+    public ScoreResponseDTO score(@Valid @RequestBody ScoreRequestDTO request) {
+        return analysisService.calculateScore(request.latitude(), request.longitude(), request.aiAnalysis());
     }
 
     @GetMapping("/geo/weather")
