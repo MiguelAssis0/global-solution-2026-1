@@ -1,11 +1,12 @@
-import type { AiLocationAnalysis, AnalysisResult, InfraResult } from "../../../types/analysis.types";
+import type { AiLocationAnalysis, InfraResult } from "../../../types/analysis.types";
 import { formatDistance } from "../../../utils/format";
-import { useCityInfo } from "../../../hooks/useCityInfo";
+import type { CityInfo } from "../../../services/nominatimService";
 
 interface InfraBlockProps {
   infra: InfraResult;
-  analysis?: AnalysisResult | null;
   aiAnalysis?: AiLocationAnalysis | null;
+  cityInfo?: CityInfo | null;
+  cityLoading?: boolean;
 }
 
 function formatAiDistance(distanceKm: number | null | undefined) {
@@ -16,16 +17,13 @@ function formatAiDistance(distanceKm: number | null | undefined) {
   return formatDistance(distanceKm);
 }
 
-export function InfraBlock({ infra, analysis, aiAnalysis }: InfraBlockProps) {
+export function InfraBlock({
+  infra,
+  aiAnalysis,
+  cityInfo,
+  cityLoading = false,
+}: InfraBlockProps) {
   const waitingText = "Aguarde...";
-  const lat = analysis ? ("lat" in analysis ? analysis.lat : analysis.centroidLat) : undefined;
-  const lng = analysis ? ("lng" in analysis ? analysis.lng : analysis.centroidLng) : undefined;
-
-  const { cityInfo, isLoading } = useCityInfo({
-    lat,
-    lng,
-    enabled: !!analysis,
-  });
 
   const cityDisplay = cityInfo
     ? `${cityInfo.cityName}, ${cityInfo.state} • ${cityInfo.country}`
@@ -58,7 +56,7 @@ export function InfraBlock({ infra, analysis, aiAnalysis }: InfraBlockProps) {
       <div style={{ marginBottom: 16, fontWeight: 800 }}>Infraestrutura</div>
       <div style={{ display: "grid", gap: 12 }}>
         {[
-          { label: "Cidade mais próxima", value: infra.nearestCity, display: cityDisplay, isLoading },
+          { label: "Cidade mais próxima", value: infra.nearestCity, display: cityDisplay, isLoading: cityLoading },
           { label: "Subestação", display: substationDisplay },
           { label: "Porto", display: portDisplay },
           { label: "Rodovia principal", display: highwayDisplay },

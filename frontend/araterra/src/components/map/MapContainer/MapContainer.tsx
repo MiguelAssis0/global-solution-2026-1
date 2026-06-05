@@ -126,7 +126,7 @@ export function MapSurface({
       : [];
 
   return (
-    <div style={{ height: "100%", width: "100%" }}>
+    <div id="analysis-map-export" style={{ height: "100%", width: "100%" }}>
       <LeafletMap
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
